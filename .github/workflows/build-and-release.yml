@@ -1,0 +1,55 @@
+name: Build and release
+
+on:
+  push:
+    branches:
+      - main
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: Build application
+        run: |
+          docker build . -f Dockerfile -t "openglide:${GITHUB_SHA}"
+          mkdir out
+          docker save "openglide:${GITHUB_SHA}" -o "out/openglide-${GITHUB_SHA}.tar"
+      - name: S3 Sync
+        uses: jakejarvis/s3-sync-action@v0.5.1
+        env:
+          AWS_ACCESS_KEY_ID: "VLJZW4JOWZX7EP02OMU5"
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_S3_BUCKET: "openglide"
+          AWS_REGION: "us-ord-1"
+          AWS_S3_ENDPOINT: "https://us-ord-1.linodeobjects.com"
+          SOURCE_DIR: "out"
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Tailscale login
+        uses: tailscale/github-action@v2
+        with:
+          version: 1.76.6
+          oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
+          oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
+          tags: tag:github-action
+        env:
+          ADDITIONAL_ARGS: "--accept-dns"
+      - name: Deploy nomad job
+        run: |
+          curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo apt-key add -
+          sudo apt-add-repository "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main"
+          sudo apt-get update && sudo apt-get install nomad
+          tailscale status
+          nomad job run -var version=${GITHUB_SHA} -var secret_access_key=${{secrets.AWS_SECRET_ACCESS_KEY}} job.nomad.hcl
+        env:
+          NOMAD_ADDR: http://ncm-0:4646
+          NOMAD_TOKEN: ${{ secrets.NOMAD_TOKEN }}
