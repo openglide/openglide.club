@@ -27,7 +27,7 @@ job "openglide" {
         GODEBUG = "x509negativeserial=1"
       }
       artifact {
-        source = "s3://us-east-1.linodeobjects.com/openglide.club/openglide-${var.version}.tar"
+        source = "s3://us-ord-1.linodeobjects.com/openglide/openglide-${var.version}.tar"
         options {
           aws_access_key_id     = "VLJZW4JOWZX7EP02OMU5"
           aws_access_key_secret = var.secret_access_key
