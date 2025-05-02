@@ -37,7 +37,7 @@ jobs:
       - name: Tailscale login
         uses: tailscale/github-action@v2
         with:
-          version: 1.76.6
+          version: 1.82.5
           oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
           oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
           tags: tag:github-action

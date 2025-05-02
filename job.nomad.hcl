@@ -44,7 +44,7 @@ job "openglide" {
 
       resources {
         cpu    = 128
-        memory = 128
+        memory = 64
       }
 
       service {
