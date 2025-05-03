@@ -16,7 +16,7 @@ const (
 
 func Start() {
 	var err error
-	fmt.Printf("openglide.club started at http://%s", ListenAddress)
+	slog.Info(fmt.Sprintf("openglide.club started at http://%s", ListenAddress))
 	s := &http.Server{
 		Handler:           oghttp.Router(),
 		Addr:              ListenAddress,

@@ -51,25 +51,25 @@
           commands = [
             {
               help = "Run this project's services (postgres, templ, tailwindcss, app)";
-              name = "run";
+              name = "up";
               command = "nix run";
               category = "development";
             }
             {
               help = "Run the dev application server";
               name = "app";
-              command = "go generate ./... && go build -o ./tmp/openglide.club . && ./tmp/openglide.club";
+              command = "go generate ./... && go build -o ./tmp/openglide . && ./tmp/openglide";
               category = "development";
             }
           ];
           packages = with pkgs; [
             go_1_24 # Main app
             go-migrate # Generate db migrations
+            inputs.templ.packages.${system}.templ # build go code from templ templates
             postgresql_17 # Just to have psql available (there's no client-only package in nixpkgs)
-            reflex # watches for file changes
+            reflex # watch files for changes
             sqlc # generate go code from sql files
             tailwindcss_4 # Generate go code from templ templates
-            inputs.templ.packages.${system}.templ # build go code from templ templates
           ];
         };
 
@@ -95,37 +95,35 @@
             depends_on."postgres".condition = "process_healthy";
           };
 
-          settings.processes.app = {
+          settings.processes.templ = {
+            # Cannot use templ to watch files. It incorrectly indicates "Skipping file because it wasn't updated" when CSS and JS files update
+            # command = ''templ generate --watch-pattern '(.+\.js$)|(.+\.go$)|(.+\.templ$)|(.+_templ\.txt$)|(.+\.css$)' --watch --proxy="http://localhost:3000" -cmd app'';
             command = ''
               reflex \
-                  --start-service \
-                  --inverse-regex=testdata \
-                  --inverse-regex='^\.jj' \
-                  --inverse-regex='_test.go$' \
-                  --inverse-regex='^\.devenv' \
-                  --inverse-regex='^\.direnv' \
-                  --inverse-regex='^vendor' \
-                  --inverse-regex='^.data' \
-                  --inverse-regex='.*_enumer\.go|.+\.templ|.+openglide\.club$' -v \
-                  app
+                --start-service \
+                -r '.+\.js$|.+\.css$|.+\.go$|.+_templ\.txt$|.+\.templ$' \
+                --inverse-regex='^\.jj' \
+                --inverse-regex='\.devenv' \
+                --inverse-regex='\.direnv' \
+                --inverse-regex='\.data' \
+                --inverse-regex='.+openglide$' \
+                --inverse-regex='.+_templ\.go' \
+                --inverse-regex='.+_templ\.txt' \
+                -- templ generate --proxy="http://localhost:3000" --watch -cmd app
             '';
             depends_on."postgres".condition = "process_healthy";
-          };
-
-          settings.processes.templ = {
-            command = ''templ generate --watch --proxy="http://localhost:3000"'';
           };
 
           settings.processes.tailwindcss = {
             command = ''
               reflex \
-                --start-service \
-                -r '.*tailwind\.css$|.*\.templ$' \
-                --inverse-regex='^\.jj' \
-                --inverse-regex='\.devenv' \
-                --inverse-regex='\.direnv' \
-                --inverse-regex='\.data' \
-                -- tailwindcss -i ./css/tailwind.css -o ./static/css/styles.css
+               --start-service \
+               -r '.*tailwind\.css$|.*\.templ$' \
+               --inverse-regex='^\.jj' \
+               --inverse-regex='\.devenv' \
+               --inverse-regex='\.direnv' \
+               --inverse-regex='\.data' \
+               -- tailwindcss -i ./css/tailwind.css -o ./static/css/styles.css
             '';
           };
         };

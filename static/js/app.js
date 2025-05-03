@@ -5,7 +5,6 @@ var map = L.map('map').setView([lastCenter.lat, lastCenter.lon], 4);
 
 // OSM standard tile layer
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    maxZoom: 16,
     attribution: '&copy; OpenStreetMap contributors'
 }).addTo(map);
 
@@ -15,31 +14,13 @@ var markerById = {}; // Store markers by OSM type/id for list interaction
 // A marker on the map for the search results
 var searchMarker = null;
 
-// Request browser location
-if ('geolocation' in navigator) {
-    navigator.geolocation.getCurrentPosition(
-        function(position) {
-            // On success, center map on user location
-            var lat = position.coords.latitude;
-            var lng = position.coords.longitude;
-            map.setView([lat, lng], 12, { animate: true });
-        },
-        function(error) {
-            console.error("Error getting location:", error);
-        }
-    );
-} else {
-    console.warn("Geolocation not supported by this browser.");
-}
-
-// Handle search
-async function setupSearch() {
-  const searchButton = await waitForElm('#searchBtn')
-  searchButton.addEventListener('click', function() {
-      var query = document.getElementById('searchInput').value.trim();
+async function doSearch() {
+    console.log("search!")
+      const searchField =  document.getElementById('searchInput')
+      var query = searchField.value.trim();
       if (!query) return;
 
-      // Check if the query is in a coordinate format (simple check: contain comma)
+      // Check if the query is in a coordinate format: "NUM, NUM"
       if (query.includes(',')) {
           var parts = query.split(',');
           if (parts.length === 2) {
@@ -70,8 +51,7 @@ async function setupSearch() {
           .catch(err => {
               console.error('Error during Nominatim fetch: ', err);
           });
-  });
-}
+  }
 
 function centerMapAndAddMarker(lat, lng) {
     map.setView([lat, lng], 12, { animate: true });
@@ -154,6 +134,7 @@ out center tags;
             });
             updateSiteList(sites);
             lastCenter = map.getCenter();
+            lastZoom = map.getZoom();
         })
         .catch(err => {
             console.error('Failed to fetch Overpass data', err);
@@ -163,8 +144,9 @@ out center tags;
 // Movement threshold logic (10% of map size)
 function shouldFetchNewData() {
     const currentCenter = map.getCenter();
-    console.debug("last center", lastCenter, "current center", currentCenter)
+    const currentZoom = map.getZoom();
     const bounds = map.getBounds();
+    const zoomedOut = currentZoom < lastZoom
 
     const latDiff = Math.abs(currentCenter.lat - lastCenter.lat);
     const lngDiff = Math.abs(currentCenter.lng - lastCenter.lng);
@@ -172,12 +154,12 @@ function shouldFetchNewData() {
     const latThreshold = (bounds.getNorth() - bounds.getSouth()) * 0.10;
     const lngThreshold = (bounds.getEast() - bounds.getWest()) * 0.10;
 
-    const shouldFetch =  latDiff > latThreshold || lngDiff > lngThreshold;
-    console.log("fetch new data?", shouldFetch)
+    const shouldFetch =  latDiff > latThreshold || lngDiff > lngThreshold || zoomedOut;
+    console.log("fetch new data?", shouldFetch, "current zooom", currentZoom, "current center", currentCenter, "last center", lastCenter)
     return shouldFetch
 }
 
-function onMapMoved() {
+function onViewportChange() {
     if (shouldFetchNewData()) {
         fetchParaglidingSites();
     }
@@ -238,9 +220,9 @@ function waitForElm(selector) {
 }
 
 // Fetch and update when map stops moving
-map.on('moveend', onMapMoved);
+map.on('moveend', onViewportChange);
+// map.on('zoomend', onViewportChange);
 
 // Fetch on load
 fetchParaglidingSites();
-setupSearch();
 
