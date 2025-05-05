@@ -3,3 +3,5 @@
 .direnv
 tmp/
 result
+**/*_templ.txt
+static/css/styles.css

@@ -5,6 +5,7 @@ import (
 	"log/slog"
 	"net/http"
 	"os"
+	"os/signal"
 	"time"
 
 	oghttp "github.com/openglide/openglide.club/http"
@@ -15,6 +16,27 @@ const (
 )
 
 func Start() {
+	sigs := make(chan os.Signal, 1)
+	signal.Notify(sigs)
+
+	// Channel to notify the main goroutine to stop.
+	done := make(chan bool, 1)
+
+	// Start a goroutine that waits for signals.
+	go func() {
+		sig := <-sigs
+		slog.Warn("Received signal:", "signal", sig)
+		slog.Info("Shutting down gracefully...")
+		done <- true
+	}()
+
+	go func() {
+		// Wait for the signal to finish cleanup
+		<-done
+		slog.Info("bye")
+		os.Exit(0)
+	}()
+
 	var err error
 	slog.Info(fmt.Sprintf("openglide.club started at http://%s", ListenAddress))
 	s := &http.Server{
@@ -24,6 +46,8 @@ func Start() {
 		WriteTimeout:      time.Duration(30 * time.Second),
 	}
 	err = s.ListenAndServe()
-	slog.Error("server exited", "error", err)
-	os.Exit(1)
+	if err != nil {
+		slog.Error("unable to start server:", "error", err)
+		os.Exit(1)
+	}
 }

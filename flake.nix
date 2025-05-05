@@ -61,7 +61,7 @@
             {
               help = "Run the dev application server";
               name = "app";
-              command = "go generate ./... && go build -o ./tmp/openglide . && ./tmp/openglide";
+              command = "go generate ./... && go build -o tmp/openglide && ./tmp/openglide";
               category = "development";
             }
           ];
@@ -99,21 +99,7 @@
           };
 
           settings.processes.templ = {
-            # Cannot use templ to watch files. It incorrectly indicates "Skipping file because it wasn't updated" when CSS and JS files update
-            # command = ''templ generate --watch-pattern '(.+\.js$)|(.+\.go$)|(.+\.templ$)|(.+_templ\.txt$)|(.+\.css$)' --watch --proxy="http://localhost:3000" -cmd app'';
-            command = ''
-              reflex \
-                --start-service \
-                -r '.+\.js$|.+\.css$|.+\.go$|.+_templ\.txt$|.+\.templ$' \
-                --inverse-regex='^\.jj' \
-                --inverse-regex='\.devenv' \
-                --inverse-regex='\.direnv' \
-                --inverse-regex='\.data' \
-                --inverse-regex='.+openglide$' \
-                --inverse-regex='.+_templ\.go' \
-                --inverse-regex='.+_templ\.txt' \
-                -- templ generate --proxy="http://localhost:3000" --watch -cmd app
-            '';
+            command = ''../templ/result/bin/templ generate --watch-pattern '(.+\.js$)|(.+\.go$)|(.+\.templ$)|(.+_templ\.txt$)|(.+\.css$)' --watch --proxy="http://localhost:3000" -cmd app'';
             depends_on."postgres".condition = "process_healthy";
           };
 

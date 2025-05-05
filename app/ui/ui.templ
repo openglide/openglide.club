@@ -16,21 +16,21 @@ templ App() {
 		</head>
 		<body class="h-full">
 			<div id="container" class="flex flex-col h-screen">
-				<div id="searchBox" class="bg-white p-2 rounded shadow flex items-center space-x-2">
-					<div class="relative w-96">
-						<div class="flex">
+				<div id="searchBox" class="bg-white p-2 rounded shadow flex content-center space-x-2">
+					<div class="relative w-full">
+						<div class="flex center">
 							<input
 								type="text"
 								id="searchInput"
-								placeholder="Search location or coordinates"
-								class="w-52 px-2 py-1 border border-gray-300 rounded-l-lg focus:outline-none focus:ring focus:border-blue-400"
+								placeholder="Go to location by name or coordinates"
+								class="w-1/3 px-2 py-1 border border-gray-300 rounded-l-lg focus:outline-none focus:ring focus:border-blue-400"
 								_="on keyup debounced at 750ms showSearchSuggestions()"
 							/>
 							<button
 								id="search_button"
 								class="px-3 py-1 rounded-r-lg bg-blue-500 text-white hover:bg-blue-600"
-								_="on click doSearch() then console.log('did search')"
-							>Search</button>
+								_="on click doSearch()"
+							>Go</button>
 						</div>
 						<div
 							id="searchSuggestions"

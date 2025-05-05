@@ -4,9 +4,27 @@ var lastCenter = { "lat": 39.8283, "lon": -98.5795}
 var map = L.map('map').setView([lastCenter.lat, lastCenter.lon], 4);
 
 // OSM standard tile layer
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+var osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; OpenStreetMap contributors'
-}).addTo(map);
+});
+
+// Esri World Imagery (satellite imagery), no API key needed
+var satellite = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',  {
+    attribution: '&copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
+  }
+);
+
+// make osm the default tile set
+osm.addTo(map);
+
+// Base maps object for layer control
+var baseMaps = {
+    "OpenStreetMap": osm,
+    "Satellite": satellite
+};
+
+// Add layer selector (top-right by default)
+L.control.layers(baseMaps).addTo(map);
 
 // The map zoom level at which site geometries are rendered on the map
 const geometryZoom = 14;
