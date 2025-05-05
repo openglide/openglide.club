@@ -18,43 +18,128 @@ var searchMarker     = null;
 // A marker on the map for the search results
 var searchMarker = null;
 
-async function doSearch() {
-      const searchField =  document.getElementById('searchInput')
-      var query = searchField.value.trim();
-      if (!query) return;
+async function showSearchSuggestions() {
+  const searchField = document.getElementById('searchInput');
+  const suggestionsBox = document.getElementById('searchSuggestions');
+  let query = searchField.value.trim();
 
-      // Check if the query is in a coordinate format: "NUM, NUM"
-      if (query.includes(',')) {
-          var parts = query.split(',');
-          if (parts.length === 2) {
-              var lat = parseFloat(parts[0]);
-              var lng = parseFloat(parts[1]);
-              if (!isNaN(lat) && !isNaN(lng)) {
-                  // Coordinates found, center map and add marker
-                  centerMapAndAddMarker(lat, lng);
-                  return;
-              }
-          }
-      }
-
-      // Otherwise, treat as a name (geocode with Nominatim)
-      var nominatimUrl = 'https://nominatim.openstreetmap.org/search?format=json&q=' + encodeURIComponent(query);
-      fetch(nominatimUrl)
-          .then(response => response.json())
-          .then(data => {
-              if (data && data.length > 0) {
-                  // Use the first result for simplicity
-                  var lat = parseFloat(data[0].lat);
-                  var lng = parseFloat(data[0].lon);
-                  centerMapAndAddMarker(lat, lng);
-              } else {
-                  alert('No results found for "' + query + '".');
-              }
-          })
-          .catch(err => {
-              console.error('Error during Nominatim fetch: ', err);
-          });
+  // Hide if empty
+  if (!query) {
+    suggestionsBox.style.display = "none";
+    suggestionsBox.innerHTML = '';
+    return;
   }
+
+  // Check for coordinate format (only support decimal, not DMS or other formats)
+  // Accept "-12.5, 32.1" and variations with whitespace
+  let coordMatch = query.match(/^\s*(-?\d+(\.\d+)?)\s*,\s*(-?\d+(\.\d+)?)\s*$/);
+  if (coordMatch) {
+    // Only show one suggestion for the entered coordinates
+    let lat = parseFloat(coordMatch[1]);
+    let lng = parseFloat(coordMatch[3]);
+
+    // Clamp or skip obviously invalid values if desired
+    let item = document.createElement('div');
+    item.className = 'px-2 py-1 hover:bg-blue-50 cursor-pointer text-gray-900';
+    item.textContent = `Go to coordinates: ${lat}, ${lng}`;
+    item.onclick = () => {
+      centerMapAndAddMarker(lat, lng);
+      suggestionsBox.style.display = "none";
+      suggestionsBox.innerHTML = '';
+    };
+    suggestionsBox.innerHTML = '';
+    suggestionsBox.appendChild(item);
+    suggestionsBox.style.display = "block";
+    return;
+  }
+
+  // Otherwise, call Nominatim to get suggestions
+  var nominatimUrl = 'https://nominatim.openstreetmap.org/search?format=json&q=' + encodeURIComponent(query);
+  fetch(nominatimUrl)
+    .then(res => res.json())
+    .then(data => {
+      suggestionsBox.innerHTML = '';
+      if (!data || !data.length) {
+        let item = document.createElement('div');
+        item.className = 'px-2 py-1 text-gray-500';
+        item.textContent = `No results found for "${query}"`;
+        suggestionsBox.appendChild(item);
+      } else {
+        data.slice(0, 8).forEach(result => {
+          let lat = parseFloat(result.lat);
+          let lng = parseFloat(result.lon);
+          let name = result.display_name || `${lat},${lng}`;
+          let item = document.createElement('div');
+          item.className = 'px-2 py-1 hover:bg-blue-50 cursor-pointer truncate';
+          item.title = result.display_name;
+          item.innerHTML = `<span class="font-medium">${name}</span>`;
+          item.onclick = () => {
+            centerMapAndAddMarker(lat, lng);
+            suggestionsBox.style.display = "none";
+            suggestionsBox.innerHTML = '';
+            // Optional: set search field to selected name
+            // searchField.value = name;
+          };
+          suggestionsBox.appendChild(item);
+        });
+      }
+      suggestionsBox.style.display = "block";
+    })
+    .catch(err => {
+      suggestionsBox.innerHTML = '<div class="px-2 py-1 text-red-500">Error fetching results</div>';
+      suggestionsBox.style.display = "block";
+    });
+}
+
+// Hide suggestions when clicking outside
+document.addEventListener('click', function(e) {
+  const suggestionsBox = document.getElementById('searchSuggestions');
+  const searchBox = document.getElementById('searchBox');
+  if (!searchBox.contains(e.target)) {
+    suggestionsBox.style.display = "none";
+    suggestionsBox.innerHTML = '';
+  }
+});
+
+async function doSearch() {
+  var query = searchField.value.trim();
+  if (!query) return;
+
+  const searchField =  document.getElementById('searchInput')
+  const suggestionsBox = document.getElementById('searchSuggestions');
+
+  // Coordinate match as before
+  let coordMatch = query.match(/^\s*(-?\d+(\.\d+)?)\s*,\s*(-?\d+(\.\d+)?)\s*$/);
+  if (coordMatch) {
+    let lat = parseFloat(coordMatch[1]);
+    let lng = parseFloat(coordMatch[3]);
+    centerMapAndAddMarker(lat, lng);
+    suggestionsBox.style.display = "none";
+    suggestionsBox.innerHTML = '';
+    return;
+  }
+
+  // Otherwise, do Nominatim and use first result
+  var nominatimUrl = 'https://nominatim.openstreetmap.org/search?format=json&q=' + encodeURIComponent(query);
+  fetch(nominatimUrl)
+    .then(response => response.json())
+    .then(data => {
+      if (data && data.length > 0) {
+        var lat = parseFloat(data[0].lat);
+        var lng = parseFloat(data[0].lon);
+        centerMapAndAddMarker(lat, lng);
+      } else {
+        alert('No results found for "' + query + '".');
+      }
+      suggestionsBox.style.display = "none";
+      suggestionsBox.innerHTML = '';
+    })
+    .catch(err => {
+      console.error('Error during Nominatim fetch: ', err);
+      suggestionsBox.style.display = "none";
+      suggestionsBox.innerHTML = '';
+    });
+}
 
 function centerMapAndAddMarker(lat, lng) {
     map.setView([lat, lng], 12, { animate: true });
