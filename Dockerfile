@@ -1,35 +1,28 @@
-# syntax=docker/dockerfile:1
-FROM alpine:latest AS base
-RUN apk update && apk add --upgrade --no-cache go ca-certificates && update-ca-certificates
+# Nix builder
+FROM nixos/nix:latest AS builder
 
-# Templ 
-FROM ghcr.io/a-h/templ:v0.3.865 AS templ
-COPY --chown=65532:65532 . /app
-WORKDIR /app
-RUN ["templ", "generate"]
+# Copy our source and setup our working dir.
+COPY . /tmp/build
+WORKDIR /tmp/build
 
-# Sqlc
-FROM alpine AS sqlc
-COPY --from=sqlc/sqlc /workspace/sqlc /usr/bin/sqlc
-COPY --chown=65532:65532 . /app
-WORKDIR /app
-RUN ["sqlc", "generate"]
+# Build our Nix environment
+RUN nix \
+    --extra-experimental-features "nix-command flakes" \
+    build .#app 
 
-# Build
-FROM golang:1.24-alpine AS go-build 
-WORKDIR /app
-COPY --from=sqlc /app /app
-COPY --from=templ /app /app
-COPY go.mod go.sum ./
-ADD https://github.com/dobicinaitis/tailwind-cli-extra/releases/download/v1.7.11/tailwindcss-extra-linux-x64 tailwindcss 
-RUN chmod +x tailwindcss && ./tailwindcss -i ./css/tailwind.css -o ./static/css/styles.css
-RUN go mod download
-RUN --mount=type=cache,target=/root/.cache/go-build CGO_ENABLED=0 GOOS=linux go build -o ./openglide main.go
+# Copy the Nix store closure into a directory. The Nix store closure is the
+# entire set of Nix store values that we need for our build.
+RUN mkdir /tmp/nix-store-closure
+RUN cp -R $(nix-store -qR result/) /tmp/nix-store-closure
+RUN ls /tmp/build/result
 
-# Application
-FROM alpine:latest 
+# the application image is derived from 'scratch'.
+# We copy a self-contained nix store into scratch, which contains all of our project's dependencies
+FROM scratch
+
 WORKDIR /app
-COPY --from=base /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
-COPY --from=go-build /app/openglide .
+COPY --from=builder /tmp/nix-store-closure /nix/store
+COPY --from=builder /tmp/build/result /app
+
 EXPOSE 3000
-CMD ["/app/openglide"]
+CMD ["/app/bin/openglide.club"]

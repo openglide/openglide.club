@@ -1,7 +1,10 @@
 {
   description = "Go project flake template";
   inputs = {
-    ess.url = "github:acaloiaro/ess/v2.13.0";
+    ess = {
+      url = "github:acaloiaro/ess/v2.18.2";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     devshell.url = "github:numtide/devshell";
     flake-parts.url = "github:hercules-ci/flake-parts";
     nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
@@ -38,7 +41,7 @@
           };
           nixfmt-rfc-style.enable = true;
         };
-
+        packages.app = pkgs.callPackage ./. {inherit pkgs self;};
         devshells.default = {
           env = [
             # this is a hack, using 'eval', to install pre-commit hooks, since devshell doesn't have shellHook to hook into

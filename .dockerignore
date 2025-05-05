@@ -1,0 +1,7 @@
+.env
+.data
+.direnv
+tmp/
+.git/
+.jj/
+result/
