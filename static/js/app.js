@@ -8,14 +8,17 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; OpenStreetMap contributors'
 }).addTo(map);
 
+// The map zoom level at which site geometries are rendered on the map
+const geometryZoom = 14;
+
 var paraglidingLayer = L.layerGroup().addTo(map);
-var markerById = {}; // Store markers by OSM type/id for list interaction
+var markerById       = {}; // key => layer
+var searchMarker     = null;
 
 // A marker on the map for the search results
 var searchMarker = null;
 
 async function doSearch() {
-    console.log("search!")
       const searchField =  document.getElementById('searchInput')
       var query = searchField.value.trim();
       if (!query) return;
@@ -61,86 +64,125 @@ function centerMapAndAddMarker(lat, lng) {
     searchMarker = L.marker([lat, lng]).addTo(map);
 }
 
-// Fetch paragliding sites from Overpass
 function fetchParaglidingSites() {
-    paraglidingLayer.clearLayers();
-    markerById = {};
-    var bounds = map.getBounds();
-    var bbox = [
-        bounds.getSouthWest().lat,
-        bounds.getSouthWest().lng,
-        bounds.getNorthEast().lat,
-        bounds.getNorthEast().lng
-    ].join(',');
+  paraglidingLayer.clearLayers();
+  markerById = {};
 
-    var query = `
-[out:json][timeout:25];
-(
-nwr["sport"="free_flying"](${bbox});
-);
-out center tags;
-`;
-    var url = 'https://overpass-api.de/api/interpreter?data=' + encodeURIComponent(query);
+  const bounds = map.getBounds();
+  const bbox   = [
+    bounds.getSouthWest().lat,
+    bounds.getSouthWest().lng,
+    bounds.getNorthEast().lat,
+    bounds.getNorthEast().lng
+  ].join(',');
 
-    // Show a loading message in the sidebar
-    document.getElementById('siteList').innerHTML = "<li class='py-1'>Loading...</li>";
+  const query = `
+    [out:json][timeout:25];
+    (
+      nwr["sport"="free_flying"](${bbox});
+      nwr["free_flying:paragliding"="yes"](${bbox});
+      nwr["free_flying:hanggliding"="yes"](${bbox});
+      nwr["free_flying:site"="landing"](${bbox});
+      nwr["free_flying:site"="launch"](${bbox});
+      nwr["sport"="free_flying"]["aeroway"="aerodrome"](${bbox});
+      nwr["aeroway"="runway"]["note"="paragliding"](${bbox});
+    );
+    out center tags geom;
+  `;
+  const url = 'https://overpass-api.de/api/interpreter?data=' + encodeURIComponent(query);
 
-    fetch(url)
-        .then(response => response.json())
-        .then(data => {
-            var elements = data.elements;
-            var sites = [];
+  document.getElementById('siteList').innerHTML = "<li class='py-1'>Loading...</li>";
 
-            elements.forEach(function(element) {
-                var lat, lon;
-                if (element.type === "node") {
-                    lat = element.lat;
-                    lon = element.lon;
-                } else if (element.type === "way" || element.type === "relation") {
-                    lat = element.center && element.center.lat;
-                    lon = element.center && element.center.lon;
-                }
-                if (lat && lon) {
-                    var name = element.tags && element.tags.name ? element.tags.name : '(Unnamed paragliding site)';
-                    var osmUrl = "https://www.openstreetmap.org/" + element.type + "/" + element.id;
+  fetch(url)
+    .then(r => r.json())
+    .then(data => {
+  const currentZoom = map.getZoom();
+  const sites = [];
 
-                    // Build popup content with all tags
-                    var tagInfo = '';
-                    if (element.tags) {
-                        tagInfo = Object.keys(element.tags).map(function (key) {
-                            return "<b>" + key + ":</b> " + element.tags[key];
-                        }).join("<br/>");
-                    }
+  data.elements.forEach(el => {
+    const key = el.type + "/" + el.id;
+    const name = el.tags?.name || "(Unnamed paragliding site)";
+    const osmUrl = "https://www.openstreetmap.org/" + key;
 
-                    var popupContent = "<b>" + name + "</b><br/><a href=\"" + osmUrl + "\" target=\"_blank\">View on OSM</a>";
-                    if (tagInfo) {
-                        popupContent += "<br/>" + tagInfo;
-                    }
+    // make your popup
+    let tagInfo = "";
+    if (el.tags) {
+      tagInfo = Object.entries(el.tags)
+        .map(([k,v]) => `<b>${k}:</b> ${v}`)
+        .join("<br>");
+    }
+    const popupContent = `
+      <b>${name}</b><br>
+      <a href="${osmUrl}" target="_blank">View on OSM</a>
+      ${tagInfo ? "<br>" + tagInfo : ""}
+    `;
 
-                    var marker = L.marker([lat, lon])
-                        .bindPopup(popupContent)
-                        .addTo(paraglidingLayer);
+    const isNode = el.type === "node";
+    const center = elementCenter(el)
+    const showMarker = isNode || (!isNode && currentZoom < geometryZoom);
+    const showGeom   = !isNode && currentZoom >= geometryZoom && Array.isArray(el.geometry);
+    if (showMarker && center) {
+      const m = L.marker(center)
+        .bindPopup(popupContent)
+        .addTo(paraglidingLayer);
+      markerById[key] = m;
+      sites.push({ key, name, osmUrl });
+    }
+    else if (showGeom) {
+      const coords = el.geometry.map(pt => [pt.lon, pt.lat]);
+      const geom = (coords.length > 2
+                    && coords[0][0] === coords[coords.length-1][0]
+                    && coords[0][1] === coords[coords.length-1][1])
+        ? { type: "Polygon",    coordinates: [coords] }
+        : { type: "LineString", coordinates: coords };
 
-                    var key = element.type + "/" + element.id;
-                    markerById[key] = marker;
+      const feature = {
+        type: "Feature",
+        properties: { name, osmUrl },
+        geometry: geom
+      };
+      const layer = L.geoJSON(feature, {
+        style: { color: "#0077cc", weight: 3 },
+        onEachFeature: (_, lyr) => lyr.bindPopup(popupContent)
+      }).addTo(paraglidingLayer);
 
-                    // Push info for sidebar
-                    sites.push({
-                        key: key,
-                        name: name,
-                        osmUrl: osmUrl
-                    });
-                }
-            });
-            updateSiteList(sites);
-            lastCenter = map.getCenter();
-            lastZoom = map.getZoom();
-        })
-        .catch(err => {
-            console.error('Failed to fetch Overpass data', err);
-            document.getElementById('siteList').innerHTML = "<li class='py-1 text-red-600'>Failed to load data</li>";
-        });
+      markerById[key] = layer;
+      sites.push({ key, name, osmUrl });
+    }
+  });
+
+  updateSiteList(sites);
+  lastCenter = map.getCenter();
+  lastZoom   = map.getZoom();
+})
+    .catch(err => {
+      console.error("Failed to fetch Overpass data", err);
+      document.getElementById("siteList").innerHTML =
+        "<li class='py-1 text-red-600'>Failed to load data</li>";
+    });
 }
+
+function elementCenter(el) {
+  const isNode = el.type === "node";
+  if (isNode) {
+    return [el.lat, el.lon];
+  } else if (el.center) {
+    return [el.center.lat, el.center.lon];
+  } else if (el.geometry) {
+    // fallback: average via leaflet bounds
+    const latlngs = el.geometry.map(pt => [pt.lat, pt.lon]);
+    const bounds  = L.polyline(latlngs).getBounds();
+    const c       = bounds.getCenter();
+    return [c.lat, c.lng];
+  } else if (el.bounds) {
+    const b = el.bounds;
+    const bounds  = L.polyline([[b.maxlat, b.maxlon], [b.minlat, b.minlon ]]).getBounds();
+    const c       = bounds.getCenter();
+    return [c.lat, c.lng];   
+  }
+  return null
+}
+
 // Movement threshold logic (10% of map size)
 function shouldFetchNewData() {
     const currentCenter = map.getCenter();
@@ -155,7 +197,7 @@ function shouldFetchNewData() {
     const lngThreshold = (bounds.getEast() - bounds.getWest()) * 0.10;
 
     const shouldFetch =  latDiff > latThreshold || lngDiff > lngThreshold || zoomedOut;
-    console.log("fetch new data?", shouldFetch, "current zooom", currentZoom, "current center", currentCenter, "last center", lastCenter)
+    // console.log("fetch new data?", shouldFetch, "current zooom", currentZoom, "current center", currentCenter, "last center", lastCenter)
     return shouldFetch
 }
 
@@ -180,7 +222,7 @@ function updateSiteList(sites) {
         li.onclick = function() {
             var marker = markerById[site.key];
             if(marker){
-                map.setView(marker.getLatLng(), Math.max(map.getZoom(), 12), { animate: true });
+                map.setView(marker.getLatLng(), Math.max(map.getZoom(), geometryZoom), { animate: true });
                 marker.openPopup();
             }
         };
