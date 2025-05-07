@@ -29,7 +29,91 @@ func App() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<!doctype html><html><head><title>Openglide :: Open source paraglide and hangglide sites</title><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"><link rel=\"stylesheet\" href=\"https://unpkg.com/leaflet@1.9.4/dist/leaflet.css\"><script src=\"https://unpkg.com/leaflet@1.9.4/dist/leaflet.js\"></script><link href=\"css/styles.css\" rel=\"stylesheet\"><script src=\"js/app.js\" async></script><script src=\"js/hyperscript.js\" async></script><script src=\"js/htmx.js\" async></script></head><body class=\"h-full\"><div id=\"container\" class=\"flex flex-col h-screen\"><div id=\"searchBox\" class=\"bg-white p-2 rounded shadow flex content-center space-x-2\"><div class=\"relative w-full\"><div class=\"flex center\"><input type=\"text\" id=\"searchInput\" placeholder=\"Go to location by name or coordinates\" class=\"w-1/3 px-2 py-1 border border-gray-300 rounded-l-lg focus:outline-none focus:ring focus:border-blue-400\" _=\"on keyup debounced at 750ms showSearchSuggestions()\"> <button id=\"search_button\" class=\"px-3 py-1 rounded-r-lg bg-blue-500 text-white hover:bg-blue-600\" _=\"on click doSearch()\">Go</button></div><div id=\"searchSuggestions\" class=\"absolute mt-2 left-0 bg-white border border-gray-200 rounded-b shadow z-[10000] max-h-56 w-full overflow-y-auto\" style=\"display:none;\"></div></div></div><div class=\"flex h-screen\"><div id=\"sidebar\" class=\"w-[300px] min-w-[180px] max-w-[40vw] p-2.5 bg-gray-100 border-r border-gray-300 overflow-y-auto\"><h3 class=\"text-lg font-semibold mb-2\">Sites</h3><ul id=\"siteList\" class=\"list-none p-0\"></ul></div><div id=\"map\" class=\"flex-1 relative\"></div></div></div></body></html>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<!doctype html><html><head><title>Openglide :: Open source paraglide and hangglide sites</title><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"><link rel=\"stylesheet\" href=\"https://unpkg.com/leaflet@1.9.4/dist/leaflet.css\"><script src=\"https://unpkg.com/leaflet@1.9.4/dist/leaflet.js\"></script><link href=\"css/styles.css\" rel=\"stylesheet\"><script src=\"js/app.js\" async></script><script src=\"js/hyperscript.js\" async></script><script src=\"js/htmx.js\" async></script></head><body class=\"h-full bg-[url(/img/bg.webp)] bg-no-repeat bg-center bg-cover\"><!-- Header --><header class=\"h-18 bg-gradient-to-b from-cyan-600  to-blue-[#eeb685] backdrop-blur-xl grid grid-cols-3 items-center px-4\"><div class=\"text-5xl text-white font-bold font-logo\">OG</div><div class=\"flex gap-8 text-2xl text-white font-bold place-self-center\"><a href=\"/about\">About</a></div></header><div class=\"w-full flex bg-white/10 backdrop-blur-xs\"><div class=\"flex items-center justify-center min-h-screen text-white\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templ_7745c5c3_Var1.Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</div></div></body></html>")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		return nil
+	})
+}
+
+func Map() templ.Component {
+	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
+		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
+		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
+			return templ_7745c5c3_CtxErr
+		}
+		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
+		if !templ_7745c5c3_IsBuffer {
+			defer func() {
+				templ_7745c5c3_BufErr := templruntime.ReleaseBuffer(templ_7745c5c3_Buffer)
+				if templ_7745c5c3_Err == nil {
+					templ_7745c5c3_Err = templ_7745c5c3_BufErr
+				}
+			}()
+		}
+		ctx = templ.InitializeContext(ctx)
+		templ_7745c5c3_Var2 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var2 == nil {
+			templ_7745c5c3_Var2 = templ.NopComponent
+		}
+		ctx = templ.ClearChildren(ctx)
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<div id=\"container\" class=\"flex flex-col h-screen\"><div class=\"flex h-screen\"><div id=\"sidebar\" class=\"w-[300px] min-w-[180px] max-w-[40vw] p-2.5 bg-gray-100 border-r border-gray-300 overflow-y-auto\"><h3 class=\"text-lg font-semibold mb-2\">Sites</h3><ul id=\"siteList\" class=\"list-none p-0\"></ul></div><div id=\"map\" class=\"flex-1 relative\"></div></div></div>")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		return nil
+	})
+}
+
+func Home() templ.Component {
+	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
+		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
+		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
+			return templ_7745c5c3_CtxErr
+		}
+		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
+		if !templ_7745c5c3_IsBuffer {
+			defer func() {
+				templ_7745c5c3_BufErr := templruntime.ReleaseBuffer(templ_7745c5c3_Buffer)
+				if templ_7745c5c3_Err == nil {
+					templ_7745c5c3_Err = templ_7745c5c3_BufErr
+				}
+			}()
+		}
+		ctx = templ.InitializeContext(ctx)
+		templ_7745c5c3_Var3 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var3 == nil {
+			templ_7745c5c3_Var3 = templ.NopComponent
+		}
+		ctx = templ.ClearChildren(ctx)
+		templ_7745c5c3_Var4 := templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
+			templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
+			templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
+			if !templ_7745c5c3_IsBuffer {
+				defer func() {
+					templ_7745c5c3_BufErr := templruntime.ReleaseBuffer(templ_7745c5c3_Buffer)
+					if templ_7745c5c3_Err == nil {
+						templ_7745c5c3_Err = templ_7745c5c3_BufErr
+					}
+				}()
+			}
+			ctx = templ.InitializeContext(ctx)
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<div id=\"search_box\" class=\"flex flex-col\"><div class=\"relative flex w-screen items-center justify-center\"><div class=\"relative w-1/3 flex\"><input type=\"text\" id=\"searchInput\" placeholder=\"Find gliding locations by name, or plug in coordinates\" class=\"h-12 flex-grow px-5 py-1 border border-gray-300 rounded-l-lg focus:outline-none focus:ring-0 border-0 bg-black/25 backdrop-blur-sm text-bold text-lg font-bold\" _=\"on keyup debounced at 750ms showSearchSuggestions()\"> <button id=\"search_button\" class=\"h-12 px-8 py-1 rounded-r-lg bg-cyan-600 text-white font-bold text-lg hover:bg-cyan-700 hover:cursor-pointer\" _=\"on click doSearch()\">Go</button><div id=\"search_suggestions\" class=\"absolute top-full p-2 mt-1 rounded bg-black/25 backdrop-blur-sm shadow z-[10000] max-h-56 w-full overflow-y-auto text-white font-bold\" style=\"display:none;\"></div></div></div></div>")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			return nil
+		})
+		templ_7745c5c3_Err = App().Render(templ.WithChildren(ctx, templ_7745c5c3_Var4), templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

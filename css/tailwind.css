@@ -1,1 +1,12 @@
-@import "tailwindcss";
+@import "tailwindcss" source(none);
+@source "../app/ui";
+
+@font-face {
+  font-family: Monoton;
+  font-display: swap;
+  src: url("/font/Monoton-Regular.ttf");
+}
+
+@theme {
+  --font-logo: "Monoton", "cursive";
+}

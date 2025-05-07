@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"syscall"
 	"time"
 
 	oghttp "github.com/openglide/openglide.club/http"
@@ -17,7 +18,7 @@ const (
 
 func Start() {
 	sigs := make(chan os.Signal, 1)
-	signal.Notify(sigs)
+	signal.Notify(sigs, os.Interrupt, syscall.SIGTERM)
 
 	// Channel to notify the main goroutine to stop.
 	done := make(chan bool, 1)

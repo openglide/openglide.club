@@ -38,7 +38,7 @@ var searchMarker = null;
 
 async function showSearchSuggestions() {
   const searchField = document.getElementById('searchInput');
-  const suggestionsBox = document.getElementById('searchSuggestions');
+  const suggestionsBox = document.getElementById('search_suggestions');
   let query = searchField.value.trim();
 
   // Hide if empty
@@ -111,8 +111,8 @@ async function showSearchSuggestions() {
 
 // Hide suggestions when clicking outside
 document.addEventListener('click', function(e) {
-  const suggestionsBox = document.getElementById('searchSuggestions');
-  const searchBox = document.getElementById('searchBox');
+  const suggestionsBox = document.getElementById('search_suggestions');
+  const searchBox = document.getElementById('search_box');
   if (!searchBox.contains(e.target)) {
     suggestionsBox.style.display = "none";
     suggestionsBox.innerHTML = '';
@@ -124,7 +124,7 @@ async function doSearch() {
   if (!query) return;
 
   const searchField =  document.getElementById('searchInput')
-  const suggestionsBox = document.getElementById('searchSuggestions');
+  const suggestionsBox = document.getElementById('search_suggestions');
 
   // Coordinate match as before
   let coordMatch = query.match(/^\s*(-?\d+(\.\d+)?)\s*,\s*(-?\d+(\.\d+)?)\s*$/);

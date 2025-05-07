@@ -73,6 +73,7 @@
             reflex # watch files for changes
             sqlc # generate go code from sql files
             tailwindcss_4 # Generate go code from templ templates
+            watchman # tailwindcss uses it to watch for changes
           ];
         };
 

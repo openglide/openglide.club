@@ -27,7 +27,12 @@ func Router() (r chi.Router) {
 	})
 
 	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
-		_ = ui.App().Render(r.Context(), w)
+		_ = ui.Home().Render(r.Context(), w)
 	})
+
+	r.Get("/map", func(w http.ResponseWriter, r *http.Request) {
+		_ = ui.Home().Render(r.Context(), w)
+	})
+
 	return
 }
