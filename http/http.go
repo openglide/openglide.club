@@ -31,7 +31,9 @@ func Router() (r chi.Router) {
 	})
 
 	r.Get("/map", func(w http.ResponseWriter, r *http.Request) {
-		_ = ui.Home().Render(r.Context(), w)
+		lat := r.URL.Query().Get("lat")
+		lon := r.URL.Query().Get("lon")
+		_ = ui.Map(lat, lon).Render(r.Context(), w)
 	})
 
 	return

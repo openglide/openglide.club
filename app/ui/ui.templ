@@ -1,5 +1,7 @@
 package ui
 
+import "fmt"
+
 templ App() {
 	<!DOCTYPE html>
 	<html>
@@ -10,16 +12,16 @@ templ App() {
 			<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 			<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 			<link href="css/styles.css" rel="stylesheet"/>
-			<script src="js/app.js" async></script>
 			<script src="js/hyperscript.js" async></script>
 			<script src="js/htmx.js" async></script>
+			<script src="js/search.js" async></script>
 		</head>
 		<body class="h-full bg-[url(/img/bg.webp)] bg-no-repeat bg-center bg-cover">
 			<!-- Header -->
 			<header class="h-18 bg-gradient-to-b from-cyan-600  to-blue-[#eeb685] backdrop-blur-xl grid grid-cols-3 items-center px-4">
-				<div class="text-5xl text-white font-bold font-logo">OG</div>
+				<div class="text-5xl text-white font-bold font-logo"><a href="/" class="cursor-pointer">OG</a></div>
 				<div class="flex gap-8 text-2xl text-white font-bold place-self-center">
-					<a href="/about">About</a>
+					<!-- <a href="/about">About</a> -->
 				</div>
 			</header>
 			<div class="w-full flex bg-white/10 backdrop-blur-xs">
@@ -31,16 +33,23 @@ templ App() {
 	</html>
 }
 
-templ Map() {
-	<div id="container" class="flex flex-col h-screen">
-		<div class="flex h-screen">
-			<div id="sidebar" class="w-[300px] min-w-[180px] max-w-[40vw] p-2.5 bg-gray-100 border-r border-gray-300 overflow-y-auto">
-				<h3 class="text-lg font-semibold mb-2">Sites</h3>
-				<ul id="siteList" class="list-none p-0"></ul>
+templ Map(lat, lon string) {
+	@App() {
+		<script src="js/app.js" async></script>
+		<div
+			id="container"
+			class="flex flex-col h-screen"
+			_={ fmt.Sprintf("on intersection loadMap(%s,%s)", lat, lon) }
+		>
+			<div class="flex h-screen w-screen">
+				<div id="sidebar" class="w-[300px] min-w-[180px] max-w-[40vw] p-2.5 overflow-y-auto bg-gray-800">
+					<h3 class="text-lg font-semibold mb-2">Sites</h3>
+					<ul id="siteList" class="list-none p-0"></ul>
+				</div>
+				<div id="map" class="bg-black flex-1 relative w-full h-full"></div>
 			</div>
-			<div id="map" class="flex-1 relative"></div>
 		</div>
-	</div>
+	}
 }
 
 templ Home() {
