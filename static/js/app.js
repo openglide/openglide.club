@@ -1,4 +1,6 @@
 function loadMap(lat, lon) {
+  var lastZoom;
+
   // The zoom level at which the map initially loads
   const initialZoom = 12;
 
@@ -38,6 +40,26 @@ function loadMap(lat, lon) {
 
   var paraglidingLayer = L.layerGroup().addTo(map);
 
+  // isSporty determines whether a feature is of the correct sport type
+  function isSporty(geoJSON) {
+    return geoJSON.tags?.sport === "free_flying";
+  }
+
+  // isSite determines whether a geoJSON object is a free flying site
+  function isSite(geoJSON) {
+    return (
+      geoJSON.type === "relation" &&
+      geoJSON.tags?.type === "site" &&
+      geoJSON.tags?.site === "sport" &&
+      isSporty(geoJSON)
+    );
+  }
+
+  // hasMembers determines whether a site is a parent to any members (e.g. landing zone, launches, etc.)
+  function hasMembers(geoJSON) {
+    return geoJSON.members?.length > 0;
+  }
+
   function fetchParaglidingSites() {
     paraglidingLayer.clearLayers();
     markerById = {};
@@ -52,12 +74,9 @@ function loadMap(lat, lon) {
 
     // Query for both relations and all nwr; relation members will be included via Overpass
     const query = `
-    [out:json][timeout:25];
-    (
-      relation["sport"="free_flying"](${bbox});
+      [out:json][timeout:25];
       nwr["sport"="free_flying"](${bbox});
-    );
-    out center tags geom;
+      out body geom;
   `;
     const url =
       "https://overpass-api.de/api/interpreter?data=" +
@@ -68,149 +87,163 @@ function loadMap(lat, lon) {
 
     fetch(url)
       .then((r) => r.json())
-      .then((data) => {
-        const currentZoom = map.getZoom();
-
-        // 1. Split elements into relations/parents and non-site members
-        const elements = data.elements || [];
-        const parents = {}; // key = rel id
-        const childToParent = {}; // key = nwr id, value = parent rel key
-
-        // First pass: find all site relation elements
-        elements.forEach((el) => {
-          if (
-            el.type === "relation" &&
-            el.tags &&
-            (el.tags.type === "multipolygon" ||
-              el.tags.type === "site" ||
-              el.tags.type === "relation")
-          ) {
-            parents["relation/" + el.id] = {
-              el,
-              memberKeys: [],
-              members: [],
-            };
-          }
-        });
-
-        // Second pass: map all members to their parent, build member lists
-        elements.forEach((el) => {
-          if (el.type === "relation" && Array.isArray(el.members)) {
-            const parentKey = "relation/" + el.id;
-            el.members.forEach((m) => {
-              const memKey = m.type + "/" + m.ref;
-              parents[parentKey].memberKeys.push(memKey);
-              childToParent[memKey] = parentKey;
-            });
-          }
-        });
-
-        // 2. List only top-level "sites" (relations) in sidebar, do not include members as top-level
-        // If no relations found, fall back to nodes/ways as before
-        let sitesForSidebar;
-        if (Object.keys(parents).length > 0) {
-          // We have parent sites in view
-          sitesForSidebar = Object.values(parents).map((p) => {
-            const el = p.el;
-            const key = "relation/" + el.id;
-            const name = el.tags?.name || "(Unnamed site)";
-            const osmUrl = "https://www.openstreetmap.org/relation/" + el.id;
-            return { key, name, osmUrl, el };
-          });
-        } else {
-          // fallback: nodes/ways in view that aren't members of a relation
-          sitesForSidebar = elements
-            .filter(
-              (el) =>
-                (el.type === "node" || el.type === "way") &&
-                !childToParent[el.type + "/" + el.id],
-            )
-            .map((el) => {
-              const key = el.type + "/" + el.id;
-              const name = el.tags?.name || "(Unnamed paragliding site)";
-              const osmUrl = "https://www.openstreetmap.org/" + key;
-              return { key, name, osmUrl, el };
-            });
-        }
-
-        // 3. Prepare all features for rendering on map but mark which ones belong to a parent
-        // Add marker/geometry for all elements, but record if it's a parent or a child
-        const markerOrLayerByKey = {};
-
-        elements.forEach((el) => {
-          const key = el.type + "/" + el.id;
-          const isParent = !!parents[key];
-          const isChild = !!childToParent[key];
-
-          // Only show marker if: (a) it's not a member of a parent, or (b) it's a parent relation itself, or (c) fallback non-relation mode
-          if (isChild && !isParent) {
-            // Don't render individual child markers/geometry until their parent is selected
-            return;
-          }
-
-          // Marker/geometry drawing
-          const name = el.tags?.name || "(Unnamed)";
-          let tagInfo = "";
-          if (el.tags) {
-            tagInfo = Object.entries(el.tags)
-              .map(([k, v]) => `<b>${k}:</b> ${v}`)
-              .join("<br>");
-          }
-          const osmUrl = "https://www.openstreetmap.org/" + key;
-          const popupContent = `
-          <b>${name}</b><br>
-          <a href="${osmUrl}" target="_blank">View on OSM</a>
-          ${tagInfo ? "<br>" + tagInfo : ""}
-        `;
-
-          const isNode = el.type === "node";
-          const center = elementCenter(el);
-          const showMarker = isNode || (!isNode && currentZoom < geometryZoom);
-          const showGeom =
-            !isNode &&
-            currentZoom >= geometryZoom &&
-            Array.isArray(el.geometry);
-
-          if (showMarker && center) {
-            const m = L.marker(center)
-              .bindPopup(popupContent)
-              .addTo(paraglidingLayer);
-            markerOrLayerByKey[key] = m;
-          } else if (showGeom) {
-            const coords = el.geometry.map((pt) => [pt.lon, pt.lat]);
-            const geom =
-              coords.length > 2 &&
-              coords[0][0] === coords[coords.length - 1][0] &&
-              coords[0][1] === coords[coords.length - 1][1]
-                ? { type: "Polygon", coordinates: [coords] }
-                : { type: "LineString", coordinates: coords };
-            const feature = {
-              type: "Feature",
-              properties: { name, osmUrl },
-              geometry: geom,
-            };
-            const layer = L.geoJSON(feature, {
-              style: { color: isParent ? "#0077cc" : "#aa3311", weight: 3 },
-              onEachFeature: (_, lyr) => lyr.bindPopup(popupContent),
-            }).addTo(paraglidingLayer);
-
-            markerOrLayerByKey[key] = layer;
-          }
-        });
-
-        // Store associations for sidebar selection
-        window._PG_siteMembersData = { parents, markerOrLayerByKey, elements };
-
-        updateSiteList(sitesForSidebar);
-        lastCenter = map.getCenter();
-        lastZoom = map.getZoom();
-      })
+      .then((data) => processQueryResponse(data))
       .catch((err) => {
         console.error("Failed to fetch Overpass data", err);
         document.getElementById("siteList").innerHTML =
           "<li class='py-1 text-red-600'>Failed to load data</li>";
       });
   }
+
+  // getGeometry returns a feature's geometry
+  //
+  // If a feature is a relation with "members", the geometry of its members are considered the parent feature's geometry
+  function getGeometry(geoJSON) {
+    if (geoJSON.geometry) {
+      return geoJSON.geometry;
+    }
+
+    if (geoJSON.members) {
+      let memberGeometry = [];
+      geoJSON.members
+        .filter((m) => m !== undefined && m.geometry)
+        .forEach((m) => {
+          memberGeometry = memberGeometry.concat(
+            m.geometry.filter((g) => g !== undefined),
+          );
+        });
+      return memberGeometry;
+    }
+    return null;
+  }
+
+  // processQueryResponse processes query responses from the overpass API
+  function processQueryResponse(opData) {
+    const currentZoom = map.getZoom();
+
+    // 1. Split elements into relations/parents and non-site members
+    const elements = opData.elements || [];
+    const parents = {}; // key = site rel id; val = osm object
+    const childToParent = {}; // key = child OSM id, value = parent rel key
+
+    // First pass: find all "sites", i.e. sites that contain one or more free flying features like landing zones or launches
+    elements
+      .filter((el) => isSite(el))
+      .forEach((el) => {
+        parents["relation/" + el.id] = {
+          el,
+          memberKeys: [],
+          members: [],
+        };
+      });
+
+    // Second pass: map all members to their parent, build member lists
+    elements
+      .filter((el) => isSite(el) && hasMembers(el))
+      .map((el) => {
+        const parentKey = "relation/" + el.id;
+        el.members.forEach((m) => {
+          const memKey = m.type + "/" + m.ref;
+          parents[parentKey].memberKeys.push(memKey);
+          childToParent[memKey] = parentKey;
+        });
+      });
+
+    // 2. List only top-level "sites" (relations) in sidebar, do not include members as top-level
+    // unless a node/way does not belong to any parent sites.
+    let sidebarSites = [];
+
+    // We have parent sites in view
+    sidebarSites = Object.values(parents).map((p) => {
+      const el = p.el;
+      const key = "relation/" + el.id;
+      const name = el.tags?.name || "(Unnamed site)";
+      const osmUrl = "https://www.openstreetmap.org/relation/" + el.id;
+      return { key, name, osmUrl, el };
+    });
+
+    // fallback: nodes/ways in view that aren't members of a relation, but are sporty
+    standaloneSites = elements
+      .filter((el) => !childToParent[el.type + "/" + el.id] && !isSite(el))
+      .map((el) => {
+        const key = el.type + "/" + el.id;
+        const name = el.tags?.name || "(Unnamed paragliding site)";
+        const osmUrl = "https://www.openstreetmap.org/" + key;
+        return { key, name, osmUrl, el };
+      });
+    sidebarSites = sidebarSites.concat(standaloneSites);
+
+    // 3. Prepare all features for rendering on map but mark which ones belong to a parent
+    // Add marker/geometry for all elements, but record if it's a parent or a child
+    const markerOrLayerByKey = {};
+
+    elements.forEach((el) => {
+      const key = el.type + "/" + el.id;
+      const isParent = !!parents[key];
+      const isChild = !!childToParent[key];
+
+      // // Only show marker if: (a) it's not a member of a parent, or (b) it's a parent relation itself, or (c) fallback standalone site mode
+      // if (isChild && !isParent) {
+      //   // Don't render individual child markers/geometry until their parent is selected
+      //   return;
+      // }
+
+      // Marker/geometry drawing
+      const name = el.tags?.name || "(Unnamed)";
+      let tagInfo = "";
+      if (el.tags) {
+        tagInfo = Object.entries(el.tags)
+          .map(([k, v]) => `<b>${k}:</b> ${v}`)
+          .join("<br>");
+      }
+      const osmUrl = "https://www.openstreetmap.org/" + key;
+      const popupContent = `
+          <b>${name}</b><br>
+          <a href="${osmUrl}" target="_blank">View on OSM</a>
+          ${tagInfo ? "<br>" + tagInfo : ""}
+        `;
+
+      const isNode = el.type === "node";
+      const center = elementCenter(el);
+      const showMarker = isNode || (!isNode && currentZoom < geometryZoom);
+      const showGeom =
+        !isParent && !isNode && currentZoom >= geometryZoom && getGeometry(el);
+
+      if (showMarker && center) {
+        const m = L.marker(center)
+          .bindPopup(popupContent)
+          .addTo(paraglidingLayer);
+        markerOrLayerByKey[key] = m;
+      } else if (showGeom) {
+        const coords = getGeometry(el).map((pt) => [pt.lon, pt.lat]);
+        const geom =
+          coords.length > 2 &&
+          coords[0][0] === coords[coords.length - 1][0] &&
+          coords[0][1] === coords[coords.length - 1][1]
+            ? { type: "Polygon", coordinates: [coords] }
+            : { type: "LineString", coordinates: coords };
+        const feature = {
+          type: "Feature",
+          properties: { name, osmUrl },
+          geometry: geom,
+        };
+        const layer = L.geoJSON(feature, {
+          style: { color: isParent ? "#0077cc" : "#aa3311", weight: 3 },
+          onEachFeature: (_, lyr) => lyr.bindPopup(popupContent),
+        }).addTo(paraglidingLayer);
+
+        markerOrLayerByKey[key] = layer;
+      }
+    });
+
+    // Store associations for sidebar selection
+    window._PG_siteMembersData = { parents, markerOrLayerByKey, elements };
+
+    updateSiteList(sidebarSites);
+    lastCenter = map.getCenter();
+    lastZoom = map.getZoom();
+  }
+
   function elementCenter(el) {
     const isNode = el.type === "node";
     if (isNode) {
@@ -250,7 +283,6 @@ function loadMap(lat, lon) {
 
     const shouldFetch =
       latDiff > latThreshold || lngDiff > lngThreshold || zoomedOut;
-    // console.log("fetch new data?", shouldFetch, "current zooom", currentZoom, "current center", currentCenter, "last center", lastCenter)
     return shouldFetch;
   }
 
