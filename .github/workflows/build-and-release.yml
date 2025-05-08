@@ -43,11 +43,13 @@ jobs:
           tags: tag:github-action
         env:
           ADDITIONAL_ARGS: "--accept-dns"
+      - name: Setup `nomad`
+        uses: hashicorp/setup-nomad@main
+        id: setup
+        with:
+          version: 1.9.0
       - name: Deploy nomad job
         run: |
-          curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo apt-key add -
-          sudo apt-add-repository "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main"
-          sudo apt-get update && sudo apt-get install nomad
           tailscale status
           nomad job run -var version=${GITHUB_SHA} -var secret_access_key=${{secrets.AWS_SECRET_ACCESS_KEY}} job.nomad.hcl
         env:
