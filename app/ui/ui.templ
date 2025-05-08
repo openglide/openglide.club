@@ -18,10 +18,10 @@ templ App() {
 		</head>
 		<body class="h-full bg-[url(/img/bg.webp)] bg-no-repeat bg-center bg-cover">
 			<!-- Header -->
-			<header class="h-18 bg-gradient-to-b from-cyan-600  to-blue-[#eeb685] backdrop-blur-xl grid grid-cols-3 items-center px-4">
+			<header class="h-18 bg-gradient-to-b from-gray-400  to-gray-800 grid grid-cols-3 items-center px-4">
 				<div class="text-5xl text-white font-bold font-logo"><a href="/" class="cursor-pointer">OG</a></div>
 				<div class="flex gap-8 text-2xl text-white font-bold place-self-center">
-					<!-- <a href="/about">About</a> -->
+					<a href="/about">About</a>
 				</div>
 			</header>
 			<div class="w-full flex bg-white/10 backdrop-blur-xs">
@@ -31,6 +31,22 @@ templ App() {
 			</div>
 		</body>
 	</html>
+}
+
+templ About() {
+	@App() {
+		<section class="flex flex-col gap-16 m-32 p-32 items-center text-center bg-black/50 backdrop-blur-xs rounded-xl">
+			<p class="text-4xl font-bold">Openglide is a community-mapped hanggliding and paragliding site directory</p>
+			<p class="text-xl font-bold">
+				Map data for openglide comes from <a href="https://openstreetmap.org" class="underline">Open Street Maps</a>.
+			</p>
+			<div class="text-xl">
+				Openglide is a work in progress, Anyone is welcome and encouraged <a href="https://github.com/openglide/openglide.club" class="underline">to contribute</a>. Here are some things coming in the near future.
+				<p>- Adding and updating sites.</p>
+				<p>- Manage your local club.</p>
+			</div>
+		</section>
+	}
 }
 
 templ Map(lat, lon string) {

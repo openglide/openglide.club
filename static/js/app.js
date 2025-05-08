@@ -37,7 +37,6 @@ function loadMap(lat, lon) {
   L.control.layers(baseMaps).addTo(map);
 
   var paraglidingLayer = L.layerGroup().addTo(map);
-  var markerById = {}; // key => layer
 
   function fetchParaglidingSites() {
     paraglidingLayer.clearLayers();

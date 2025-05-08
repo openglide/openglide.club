@@ -30,6 +30,10 @@ func Router() (r chi.Router) {
 		_ = ui.Home().Render(r.Context(), w)
 	})
 
+	r.Get("/about", func(w http.ResponseWriter, r *http.Request) {
+		_ = ui.About().Render(r.Context(), w)
+	})
+
 	r.Get("/map", func(w http.ResponseWriter, r *http.Request) {
 		lat := r.URL.Query().Get("lat")
 		lon := r.URL.Query().Get("lon")
