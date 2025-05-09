@@ -80,7 +80,7 @@ func About() templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<section class=\"flex flex-col gap-16 m-32 p-32 items-center text-center bg-black/50 backdrop-blur-xs rounded-xl\"><p class=\"text-4xl font-bold\">Openglide is a community-mapped hanggliding and paragliding site directory</p><p class=\"text-xl font-bold\">Map data for openglide comes from <a href=\"https://openstreetmap.org\" class=\"underline\">Open Street Maps</a>.</p><div class=\"text-xl\">Openglide is a work in progress, Anyone is welcome and encouraged <a href=\"https://github.com/openglide/openglide.club\" class=\"underline\">to contribute</a>. Here are some things coming in the near future.<p>- Adding and updating sites.</p><p>- Manage your local club.</p></div></section>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<section class=\"flex flex-col gap-16 m-32 p-32 items-center text-center bg-black/50 backdrop-blur-xs rounded-xl\"><p class=\"text-4xl font-bold\">Openglide is a community-mapped hanggliding and paragliding site directory</p><p class=\"text-xl font-bold\">Map data for openglide comes from <a href=\"https://openstreetmap.org\" class=\"underline\">Open Street Maps</a>.</p><div class=\"text-xl\"><p class=\"pb-6\">Openglide is a work in progress. Anyone is welcome and encouraged <a href=\"https://github.com/openglide/openglide.club\" class=\"underline\">to contribute</a>. Here are some things coming in the near future.</p><p>- Add and update gliding sites</p><p>- Embeddable site maps, for adding interactive maps to club sites</p></div></section>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

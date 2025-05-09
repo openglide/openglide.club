@@ -428,6 +428,9 @@
   .py-1 {
     padding-block: calc(var(--spacing) * 1);
   }
+  .pb-6 {
+    padding-bottom: calc(var(--spacing) * 6);
+  }
   .text-center {
     text-align: center;
   }
