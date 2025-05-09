@@ -1,3 +1,59 @@
+window.openDrawer = function (contentHtml) {
+  var drawer = document.getElementById("infoDrawer");
+  var content = document.getElementById("drawerContent");
+  content.innerHTML = contentHtml;
+  drawer.style.display = "block";
+  setTimeout(() => {
+    drawer.classList.add("open");
+  }, 10); // allow for transition
+};
+
+window.closeDrawer = function () {
+  var drawer = document.getElementById("infoDrawer");
+  drawer.classList.remove("open");
+  setTimeout(() => {
+    drawer.style.display = "none";
+  }, 300); // match CSS duration
+};
+
+// panToFeatures pans the map view to the specified feature
+function panToFeature(el) {
+  const center = elementCenter(el);
+  console.log("got center", center);
+  if (center && map) {
+    window._map.setView(center, Math.max(window._map.getZoom(), 14), {
+      animate: true,
+    });
+  }
+}
+
+// elementCenter returns the center point of an element
+function elementCenter(el) {
+  const isNode = el.type === "node";
+  if (isNode) {
+    return [el.lat, el.lon];
+  } else if (el.center) {
+    return [el.center.lat, el.center.lon];
+  } else if (el.geometry) {
+    // fallback: average via leaflet bounds
+    const latlngs = el.geometry.map((pt) => [pt.lat, pt.lon]);
+    const bounds = L.polyline(latlngs).getBounds();
+    const c = bounds.getCenter();
+    return [c.lat, c.lng];
+  } else if (el.bounds) {
+    const b = el.bounds;
+    const bounds = L.polyline([
+      [b.maxlat, b.maxlon],
+      [b.minlat, b.minlon],
+    ]).getBounds();
+    const c = bounds.getCenter();
+    return [c.lat, c.lng];
+  }
+  console.log("el", el);
+  return null;
+}
+
+// loadMap loads the map UI at the specified lattitude and longitude
 function loadMap(lat, lon) {
   var lastZoom;
 
@@ -10,7 +66,11 @@ function loadMap(lat, lon) {
   // Initialize map center
   var lastCenter = { lat: lat, lon: lon };
 
-  var map = L.map("map").setView([lastCenter.lat, lastCenter.lon], initialZoom);
+  var map = L.map("map", { maxZoom: 21 }).setView(
+    [lastCenter.lat, lastCenter.lon],
+    initialZoom,
+  );
+  window._map = map;
 
   // OSM standard tile layer
   var osm = L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
@@ -176,7 +236,27 @@ function loadMap(lat, lon) {
     // 3. Prepare all features for rendering on map but mark which ones belong to a parent
     // Add marker/geometry for all elements, but record if it's a parent or a child
     const markerOrLayerByKey = {};
-
+    const generateDrawerContent = (el, osmUrl) => {
+      let tagInfo = "";
+      if (el.tags) {
+        tagInfo =
+          `<table class="w-full mt-2">` +
+          Object.entries(el.tags)
+            .map(
+              ([k, v]) =>
+                `<tr><td class="font-bold p-1">${k}</td><td class="p-1">${v}</td></tr>`,
+            )
+            .join("") +
+          `</table>`;
+      }
+      return `
+    <div>
+      <h3 class="text-xl font-bold mb-2">${el.tags?.name || "(Unnamed site/feature)"}</h3>
+      <a href="${osmUrl}" target="_blank" class="text-blue-700 underline mb-4 inline-block">View on OpenStreetMap</a>
+      ${tagInfo}
+    </div>
+  `;
+    };
     elements.forEach((el) => {
       const key = el.type + "/" + el.id;
       const isParent = !!parents[key];
@@ -197,12 +277,6 @@ function loadMap(lat, lon) {
           .join("<br>");
       }
       const osmUrl = "https://www.openstreetmap.org/" + key;
-      const popupContent = `
-          <b>${name}</b><br>
-          <a href="${osmUrl}" target="_blank">View on OSM</a>
-          ${tagInfo ? "<br>" + tagInfo : ""}
-        `;
-
       const isNode = el.type === "node";
       const center = elementCenter(el);
       const showMarker = isNode || (!isNode && currentZoom < geometryZoom);
@@ -211,8 +285,10 @@ function loadMap(lat, lon) {
 
       if (showMarker && center) {
         const m = L.marker(center)
-          .bindPopup(popupContent)
-          .addTo(paraglidingLayer);
+          .addTo(paraglidingLayer)
+          .on("click", function () {
+            openDrawer(generateDrawerContent(el, osmUrl));
+          });
         markerOrLayerByKey[key] = m;
       } else if (showGeom) {
         const coords = getGeometry(el).map((pt) => [pt.lon, pt.lat]);
@@ -229,43 +305,20 @@ function loadMap(lat, lon) {
         };
         const layer = L.geoJSON(feature, {
           style: { color: isParent ? "#0077cc" : "#aa3311", weight: 3 },
-          onEachFeature: (_, lyr) => lyr.bindPopup(popupContent),
+          onEachFeature: (_, lyr) => {
+            lyr.on("click", function () {
+              openDrawer(generateDrawerContent(el, osmUrl));
+            });
+          },
         }).addTo(paraglidingLayer);
 
         markerOrLayerByKey[key] = layer;
       }
     });
 
-    // Store associations for sidebar selection
-    window._PG_siteMembersData = { parents, markerOrLayerByKey, elements };
-
     updateSiteList(sidebarSites);
     lastCenter = map.getCenter();
     lastZoom = map.getZoom();
-  }
-
-  function elementCenter(el) {
-    const isNode = el.type === "node";
-    if (isNode) {
-      return [el.lat, el.lon];
-    } else if (el.center) {
-      return [el.center.lat, el.center.lon];
-    } else if (el.geometry) {
-      // fallback: average via leaflet bounds
-      const latlngs = el.geometry.map((pt) => [pt.lat, pt.lon]);
-      const bounds = L.polyline(latlngs).getBounds();
-      const c = bounds.getCenter();
-      return [c.lat, c.lng];
-    } else if (el.bounds) {
-      const b = el.bounds;
-      const bounds = L.polyline([
-        [b.maxlat, b.maxlon],
-        [b.minlat, b.minlon],
-      ]).getBounds();
-      const c = bounds.getCenter();
-      return [c.lat, c.lng];
-    }
-    return null;
   }
 
   // Movement threshold logic (10% of map size)
@@ -300,25 +353,16 @@ function loadMap(lat, lon) {
     }
     list.innerHTML = "";
     sites.forEach(function (site) {
-      var li = document.createElement("li");
-      li.textContent = site.name;
-      li.title = "Click to show on map";
-      li.className =
+      var el = document.createElement("a");
+      el.href = "#";
+      el.textContent = site.name;
+      el.title = "Click to show on map";
+      el.className =
         "py-1 pl-0.5 pr-1 hover:bg-blue-50 border-b border-gray-200 cursor-pointer flex items-center justify-between";
-      li.onclick = function () {
-        onSiteSelected(site.key);
+      el.onclick = function () {
+        panToFeature(site.el);
       };
-      // Optional: Add a "view on osm" link beside the name
-      var osmA = document.createElement("a");
-      osmA.href = site.osmUrl;
-      osmA.target = "_blank";
-      osmA.textContent = "↗";
-      osmA.className = "site-link text-blue-700 hover:underline ml-2";
-      osmA.onclick = function (e) {
-        e.stopPropagation();
-      };
-      li.appendChild(osmA);
-      list.appendChild(li);
+      list.appendChild(el);
     });
   }
 

@@ -31,7 +31,7 @@ func App() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<!doctype html><html><head><title>Openglide :: Open source paraglide and hangglide sites</title><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"><link rel=\"stylesheet\" href=\"https://unpkg.com/leaflet@1.9.4/dist/leaflet.css\"><script src=\"https://unpkg.com/leaflet@1.9.4/dist/leaflet.js\"></script><link href=\"css/styles.css\" rel=\"stylesheet\"><script src=\"js/hyperscript.js\" async></script><script src=\"js/htmx.js\" async></script><script src=\"js/search.js\" async></script></head><body class=\"h-full bg-[url(/img/bg.webp)] bg-no-repeat bg-center bg-cover\"><!-- Header --><header class=\"h-18 bg-gradient-to-b from-gray-400  to-gray-800 grid grid-cols-3 items-center px-4\"><div class=\"text-5xl text-white font-bold font-logo\"><a href=\"/\" class=\"cursor-pointer\">OG</a></div><div class=\"flex gap-8 text-2xl text-white font-bold place-self-center\"><a href=\"/about\">About</a></div></header><div class=\"w-full flex bg-white/10 backdrop-blur-xs\"><div class=\"flex items-center justify-center min-h-screen text-white\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<!doctype html><html><head><title>Openglide :: Open source paraglide and hangglide sites</title><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"><link rel=\"stylesheet\" href=\"https://unpkg.com/leaflet@1.9.4/dist/leaflet.css\"><script src=\"https://unpkg.com/leaflet@1.9.4/dist/leaflet.js\"></script><link href=\"css/styles.css\" rel=\"stylesheet\"><script src=\"js/hyperscript.js\" async></script><script src=\"js/htmx.js\" async></script><script src=\"js/search.js\" async></script></head><body class=\"h-screen bg-[url(/img/bg.webp)] bg-no-repeat bg-center bg-cover\"><!-- Header --><header class=\"h-1/10 bg-gradient-to-b from-gray-400  to-gray-800 grid grid-cols-3 items-center px-4\"><div class=\"text-5xl text-white font-bold font-logo\"><a href=\"/\" class=\"cursor-pointer\">OG</a></div><div class=\"flex gap-8 text-2xl text-white font-bold place-self-center\"><a href=\"/about\">About</a></div></header><div class=\"h-9/10 flex items-center justify-center min-h-screen bg-white/10 backdrop-blur-xs\"><div class=\"flex text-white\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -127,7 +127,7 @@ func Map(lat, lon string) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<script src=\"js/app.js\" async></script> <div id=\"container\" class=\"flex flex-col h-screen\" _=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<script src=\"js/app.js\" async></script> <div id=\"container\" class=\"flex w-screen gap-0\" _=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -140,7 +140,7 @@ func Map(lat, lon string) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "\"><div class=\"flex h-screen w-screen\"><div id=\"sidebar\" class=\"w-[300px] min-w-[180px] max-w-[40vw] p-2.5 overflow-y-auto bg-gray-800\"><h3 class=\"text-lg font-semibold mb-2\">Sites</h3><ul id=\"siteList\" class=\"list-none p-0\"></ul></div><div id=\"map\" class=\"bg-black flex-1 relative w-full h-full\"></div></div></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "\"><div id=\"sidebar\" class=\"flex-none min-w-xs max-w-xs p-3 overflow-y-auto bg-gray-800\"><h3 class=\"text-xl font-bold\">Sites</h3><ul id=\"siteList\" class=\"list-none p-0\"></ul></div><div class=\"grow bg-gray-700\"><div id=\"map\" class=\"h-full w-full\"></div></div><!-- Info Drawer --><div id=\"infoDrawer\" class=\"flex-none min-w-lg max-w-lg bg-gray-800 text-white transform transition-transform duration-300 ease-in-out overflow-y-scroll hidden\"><div class=\"flex min-w-xs justify-between items-center p-4\"><h3 class=\"text-xl font-bold\">Site Details</h3><button onclick=\"closeDrawer()\" class=\"text-2xl font-bold\">&times;</button></div><div id=\"drawerContent\" class=\"p-4\"></div></div></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
