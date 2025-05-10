@@ -16,6 +16,35 @@ window.closeDrawer = function () {
   }, 300); // match CSS duration
 };
 
+window.generateDrawerContent = (el) => {
+  const key = el.type + "/" + el.id;
+  const osmUrl = "https://www.openstreetmap.org/" + key;
+
+  let tagInfo = "";
+  if (el.tags) {
+    tagInfo =
+      `<div class="flex flex-col gap-6 w-full mt-2">` +
+      Object.entries(el.tags)
+        .map(
+          ([k, v]) =>
+            `
+            <div>
+              <div class="font-bold p-1">${k}</div>
+              <div class="p-1">${v}</div>
+            </div>
+            `,
+        )
+        .join("") +
+      `</div>`;
+  }
+  return `
+    <div>
+      <h3 class="text-xl font-bold mb-2">${el.tags?.name || "(Unnamed site/feature)"} (<a href="${osmUrl}" target="_blank" class="text-blue-700 underline mb-4 inline-block">View on OpenStreetMap</a>)</h3>
+      
+      ${tagInfo}
+    </div>
+  `;
+};
 // panToFeatures pans the map view to the specified feature
 function panToFeature(el) {
   const center = elementCenter(el);
@@ -239,37 +268,9 @@ function loadMap(lat, lon) {
     // 3. Prepare all features for rendering on map but mark which ones belong to a parent
     // Add marker/geometry for all elements, but record if it's a parent or a child
     const markerOrLayerByKey = {};
-    const generateDrawerContent = (el, osmUrl) => {
-      let tagInfo = "";
-      if (el.tags) {
-        tagInfo =
-          `<table class="w-full mt-2">` +
-          Object.entries(el.tags)
-            .map(
-              ([k, v]) =>
-                `<tr><td class="font-bold p-1">${k}</td><td class="p-1">${v}</td></tr>`,
-            )
-            .join("") +
-          `</table>`;
-      }
-      return `
-    <div>
-      <h3 class="text-xl font-bold mb-2">${el.tags?.name || "(Unnamed site/feature)"}</h3>
-      <a href="${osmUrl}" target="_blank" class="text-blue-700 underline mb-4 inline-block">View on OpenStreetMap</a>
-      ${tagInfo}
-    </div>
-  `;
-    };
     elements.forEach((el) => {
       const key = el.type + "/" + el.id;
       const isParent = !!parents[key];
-      const isChild = !!childToParent[key];
-
-      // // Only show marker if: (a) it's not a member of a parent, or (b) it's a parent relation itself, or (c) fallback standalone site mode
-      // if (isChild && !isParent) {
-      //   // Don't render individual child markers/geometry until their parent is selected
-      //   return;
-      // }
 
       // Marker/geometry drawing
       const name = el.tags?.name || "(Unnamed)";
@@ -290,7 +291,7 @@ function loadMap(lat, lon) {
         const m = L.marker(center)
           .addTo(paraglidingLayer)
           .on("click", function () {
-            openDrawer(generateDrawerContent(el, osmUrl));
+            openDrawer(generateDrawerContent(el));
           });
         markerOrLayerByKey[key] = m;
       } else if (showGeom) {
@@ -310,7 +311,7 @@ function loadMap(lat, lon) {
           style: { color: isParent ? "#0077cc" : "#aa3311", weight: 3 },
           onEachFeature: (_, lyr) => {
             lyr.on("click", function () {
-              openDrawer(generateDrawerContent(el, osmUrl));
+              openDrawer(generateDrawerContent(el));
             });
           },
         }).addTo(paraglidingLayer);
@@ -364,6 +365,7 @@ function loadMap(lat, lon) {
         "py-1 pl-0.5 pr-1 hover:bg-blue-50 border-b border-gray-200 cursor-pointer flex items-center justify-between";
       el.onclick = function () {
         panToFeature(site.el);
+        openDrawer(generateDrawerContent(site.el));
       };
       list.appendChild(el);
     });
