@@ -47,6 +47,7 @@ func App() templ.Component {
 	})
 }
 
+// About is a basic about page explaining openglide
 func About() templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
@@ -94,6 +95,7 @@ func About() templ.Component {
 	})
 }
 
+// Map renders a map, along with a side bar and "info" drawer for showing site details when sites are selected
 func Map(lat, lon string) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
@@ -134,7 +136,7 @@ func Map(lat, lon string) templ.Component {
 			var templ_7745c5c3_Var6 string
 			templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("on intersection loadMap(%s,%s)", lat, lon))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `app/ui/ui.templ`, Line: 58, Col: 62}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `app/ui/ui.templ`, Line: 60, Col: 62}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 			if templ_7745c5c3_Err != nil {
@@ -154,6 +156,7 @@ func Map(lat, lon string) templ.Component {
 	})
 }
 
+// Home is the openglide.club homge page
 func Home() templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
@@ -187,7 +190,7 @@ func Home() templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "<div id=\"search_box\" class=\"flex flex-col items-center justify-center \"><div class=\"relative flex w-screen items-center justify-center\"><div class=\"relative w-1/2 text-bold text-2xl flex items-center justify-center\"><input type=\"text\" id=\"searchInput\" placeholder=\"Find gliding locations by name, or coordinates\" class=\"h-16 w-full flex-grow px-5 py-1 border border-gray-300 rounded-l-lg focus:outline-none focus:ring-0 border-0 bg-black/25 backdrop-blur-sm  font-bold\" _=\"on keyup debounced at 750ms showSearchSuggestions()\"> <button id=\"search_button\" class=\"h-16 px-8 py-1 rounded-r-lg bg-cyan-600 text-white font-bold text-lg hover:bg-cyan-700 hover:cursor-pointer\" _=\"on click doSearch()\">Go</button><div id=\"search_suggestions\" class=\"absolute top-full p-2 mt-1 rounded bg-black/25 backdrop-blur-sm shadow z-[10000] max-h-56 w-full overflow-y-auto text-white font-bold\" style=\"display:none;\"></div></div></div></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "<div id=\"search_box\" class=\"flex flex-col items-center justify-center \"><div class=\"relative flex w-screen items-center justify-center\"><div class=\"relative w-1/2 text-bold text-2xl flex items-center justify-center\"><input type=\"text\" id=\"searchInput\" placeholder=\"Find gliding locations by name, or coordinates\" class=\"h-16 w-full flex-grow px-5 py-1 border border-gray-300 rounded-l-lg focus:outline-none focus:ring-0 border-0 bg-black/25 backdrop-blur-sm  font-bold\" _=\"on keyup debounced at 400ms showSearchSuggestions()\"> <button id=\"search_button\" class=\"h-16 px-8 py-1 rounded-r-lg bg-cyan-600 text-white font-bold text-lg hover:bg-cyan-700 hover:cursor-pointer\" _=\"on click doSearch()\">Go</button><div id=\"search_suggestions\" class=\"absolute top-full p-2 mt-1 rounded bg-black/25 backdrop-blur-sm shadow z-[10000] max-h-56 w-full overflow-y-auto text-white font-bold\" style=\"display:none;\"></div></div></div></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

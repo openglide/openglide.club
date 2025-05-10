@@ -33,6 +33,7 @@ templ App() {
 	</html>
 }
 
+// About is a basic about page explaining openglide
 templ About() {
 	@App() {
 		<section class="flex flex-col gap-16 m-32 p-32 items-center text-center bg-black/50 backdrop-blur-xs rounded-xl">
@@ -49,6 +50,7 @@ templ About() {
 	}
 }
 
+// Map renders a map, along with a side bar and "info" drawer for showing site details when sites are selected
 templ Map(lat, lon string) {
 	@App() {
 		<script src="js/app.js" async></script>
@@ -79,6 +81,7 @@ templ Map(lat, lon string) {
 	}
 }
 
+// Home is the openglide.club homge page
 templ Home() {
 	@App() {
 		<div id="search_box" class="flex flex-col items-center justify-center ">
@@ -89,7 +92,7 @@ templ Home() {
 						id="searchInput"
 						placeholder="Find gliding locations by name, or coordinates"
 						class="h-16 w-full flex-grow px-5 py-1 border border-gray-300 rounded-l-lg focus:outline-none focus:ring-0 border-0 bg-black/25 backdrop-blur-sm  font-bold"
-						_="on keyup debounced at 750ms showSearchSuggestions()"
+						_="on keyup debounced at 400ms showSearchSuggestions()"
 					/>
 					<button
 						id="search_button"

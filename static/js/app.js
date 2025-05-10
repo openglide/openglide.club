@@ -95,6 +95,9 @@ function loadMap(lat, lon) {
     Satellite: satellite,
   };
 
+  // Add scale layer to help estimate distances
+  L.control.scale({ maxWidth: 1000 }).addTo(map);
+
   // Add layer selector (top-right by default)
   L.control.layers(baseMaps).addTo(map);
 
