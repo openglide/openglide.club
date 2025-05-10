@@ -53,5 +53,5 @@ jobs:
           tailscale status
           nomad job run -var version=${GITHUB_SHA} -var secret_access_key=${{secrets.AWS_SECRET_ACCESS_KEY}} job.nomad.hcl
         env:
-          NOMAD_ADDR: http://ncm-0:4646
+          NOMAD_ADDR: http://ncm-0.bison-lizard.ts.net:4646
           NOMAD_TOKEN: ${{ secrets.NOMAD_TOKEN }}
