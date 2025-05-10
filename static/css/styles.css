@@ -238,8 +238,8 @@
   .h-9\/10 {
     height: calc(9/10 * 100%);
   }
-  .h-12 {
-    height: calc(var(--spacing) * 12);
+  .h-16 {
+    height: calc(var(--spacing) * 16);
   }
   .h-full {
     height: 100%;
@@ -250,11 +250,8 @@
   .max-h-56 {
     max-height: calc(var(--spacing) * 56);
   }
-  .min-h-screen {
-    min-height: 100vh;
-  }
-  .w-1\/3 {
-    width: calc(1/3 * 100%);
+  .w-1\/2 {
+    width: calc(1/2 * 100%);
   }
   .w-full {
     width: 100%;

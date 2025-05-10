@@ -31,7 +31,7 @@ func App() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<!doctype html><html><head><title>Openglide :: Open source paraglide and hangglide sites</title><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"><link rel=\"stylesheet\" href=\"https://unpkg.com/leaflet@1.9.4/dist/leaflet.css\"><script src=\"https://unpkg.com/leaflet@1.9.4/dist/leaflet.js\"></script><link href=\"css/styles.css\" rel=\"stylesheet\"><script src=\"js/hyperscript.js\" async></script><script src=\"js/htmx.js\" async></script><script src=\"js/search.js\" async></script></head><body class=\"h-screen bg-[url(/img/bg.webp)] bg-no-repeat bg-center bg-cover\"><!-- Header --><header class=\"h-1/10 bg-gradient-to-b from-gray-400  to-gray-800 grid grid-cols-3 items-center px-4\"><div class=\"text-5xl text-white font-bold font-logo\"><a href=\"/\" class=\"cursor-pointer\">OG</a></div><div class=\"flex gap-8 text-2xl text-white font-bold place-self-center\"><a href=\"/about\">About</a></div></header><div class=\"h-9/10 flex items-center justify-center min-h-screen bg-white/10 backdrop-blur-xs\"><div class=\"flex text-white\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<!doctype html><html><head><title>Openglide :: Open source paraglide and hangglide sites</title><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"><link rel=\"stylesheet\" href=\"https://unpkg.com/leaflet@1.9.4/dist/leaflet.css\"><script src=\"https://unpkg.com/leaflet@1.9.4/dist/leaflet.js\"></script><link href=\"css/styles.css\" rel=\"stylesheet\"><script src=\"js/hyperscript.js\" async></script><script src=\"js/htmx.js\" async></script><script src=\"js/search.js\" async></script></head><body class=\"h-screen bg-[url(/img/bg.webp)] bg-no-repeat bg-center bg-cover\"><!-- Header --><header class=\"h-1/10 bg-gradient-to-b from-gray-400  to-gray-800 grid grid-cols-3 items-center px-4\"><div class=\"text-5xl text-white font-bold font-logo\"><a href=\"/\" class=\"cursor-pointer\">OG</a></div><div class=\"flex gap-8 text-2xl text-white font-bold place-self-center\"><a href=\"/about\">About</a></div></header><main class=\"h-9/10 flex items-center justify-center bg-white/10 backdrop-blur-xs \"><div class=\"flex h-full text-white\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -39,7 +39,7 @@ func App() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</div></div></body></html>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</div></main></body></html>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -187,7 +187,7 @@ func Home() templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "<div id=\"search_box\" class=\"flex flex-col\"><div class=\"relative flex w-screen items-center justify-center\"><div class=\"relative w-1/3 flex\"><input type=\"text\" id=\"searchInput\" placeholder=\"Find gliding locations by name, or plug in coordinates\" class=\"h-12 flex-grow px-5 py-1 border border-gray-300 rounded-l-lg focus:outline-none focus:ring-0 border-0 bg-black/25 backdrop-blur-sm text-bold text-lg font-bold\" _=\"on keyup debounced at 750ms showSearchSuggestions()\"> <button id=\"search_button\" class=\"h-12 px-8 py-1 rounded-r-lg bg-cyan-600 text-white font-bold text-lg hover:bg-cyan-700 hover:cursor-pointer\" _=\"on click doSearch()\">Go</button><div id=\"search_suggestions\" class=\"absolute top-full p-2 mt-1 rounded bg-black/25 backdrop-blur-sm shadow z-[10000] max-h-56 w-full overflow-y-auto text-white font-bold\" style=\"display:none;\"></div></div></div></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "<div id=\"search_box\" class=\"flex flex-col items-center justify-center \"><div class=\"relative flex w-screen items-center justify-center\"><div class=\"relative w-1/2 text-bold text-2xl flex items-center justify-center\"><input type=\"text\" id=\"searchInput\" placeholder=\"Find gliding locations by name, or coordinates\" class=\"h-16 w-full flex-grow px-5 py-1 border border-gray-300 rounded-l-lg focus:outline-none focus:ring-0 border-0 bg-black/25 backdrop-blur-sm  font-bold\" _=\"on keyup debounced at 750ms showSearchSuggestions()\"> <button id=\"search_button\" class=\"h-16 px-8 py-1 rounded-r-lg bg-cyan-600 text-white font-bold text-lg hover:bg-cyan-700 hover:cursor-pointer\" _=\"on click doSearch()\">Go</button><div id=\"search_suggestions\" class=\"absolute top-full p-2 mt-1 rounded bg-black/25 backdrop-blur-sm shadow z-[10000] max-h-56 w-full overflow-y-auto text-white font-bold\" style=\"display:none;\"></div></div></div></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
