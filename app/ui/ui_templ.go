@@ -129,7 +129,7 @@ func Map(lat, lon string) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<script src=\"js/app.js\" async></script> <div id=\"container\" class=\"flex w-screen gap-0\" _=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<script src=\"js/app.js\"></script> <div id=\"container\" class=\"flex w-screen gap-0\" _=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

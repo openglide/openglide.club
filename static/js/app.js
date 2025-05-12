@@ -17,14 +17,24 @@ window.closeDrawer = function () {
 };
 
 window.generateDrawerContent = (el) => {
-  const key = el.type + "/" + el.id;
-  const osmUrl = "https://www.openstreetmap.org/" + key;
-
+  const excludedTags = [
+    "website",
+    "sport",
+    "site",
+    "area",
+    "free_flying:site",
+    "type",
+    "leisure",
+  ];
   let tagInfo = "";
   if (el.tags) {
     tagInfo =
       `<div class="flex flex-col gap-6 w-full mt-2">` +
       Object.entries(el.tags)
+        .filter(([tag, _]) => {
+          console.log("tag", tag);
+          return !excludedTags.includes(tag);
+        })
         .map(
           ([k, v]) =>
             `
@@ -37,9 +47,13 @@ window.generateDrawerContent = (el) => {
         .join("") +
       `</div>`;
   }
+
+  var siteGuide = el.tags?.website
+    ? `<a href="${el.tags.website}" class="underline" target="_blank">(Site Guide)</a>`
+    : "";
   return `
     <div>
-      <h3 class="text-xl font-bold mb-2">${el.tags?.name || "(Unnamed site/feature)"} (<a href="${osmUrl}" target="_blank" class="text-blue-700 underline mb-4 inline-block">View on OpenStreetMap</a>)</h3>
+      <h3 class="text-xl font-bold mb-2">${el.tags?.name || "(Unnamed site/feature)"} ${siteGuide}</h3>
       
       ${tagInfo}
     </div>
@@ -48,7 +62,6 @@ window.generateDrawerContent = (el) => {
 // panToFeatures pans the map view to the specified feature
 function panToFeature(el) {
   const center = elementCenter(el);
-  console.log("got center", center);
   if (center && map) {
     window._map.setView(center, Math.max(window._map.getZoom(), 14), {
       animate: true,
