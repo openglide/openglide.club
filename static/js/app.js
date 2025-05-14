@@ -29,16 +29,15 @@ window.generateDrawerContent = (el) => {
   let tagInfo = "";
   if (el.tags) {
     tagInfo =
-      `<div class="flex flex-col gap-6 w-full mt-2">` +
+      `<div class="flex flex-col gap-3">` +
       Object.entries(el.tags)
         .filter(([tag, _]) => {
-          console.log("tag", tag);
           return !excludedTags.includes(tag);
         })
         .map(
           ([k, v]) =>
             `
-            <div>
+            <div class="my-3">
               <div class="font-bold p-1">${k}</div>
               <div class="p-1">${v}</div>
             </div>
@@ -53,8 +52,7 @@ window.generateDrawerContent = (el) => {
     : "";
   return `
     <div>
-      <h3 class="text-xl font-bold mb-2">${el.tags?.name || "(Unnamed site/feature)"} ${siteGuide}</h3>
-      
+      <h3 class="text-xl font-bold mb-3">${el.tags?.name || "(Unnamed site/feature)"} ${siteGuide}</h3>   
       ${tagInfo}
     </div>
   `;
@@ -272,7 +270,7 @@ function loadMap(lat, lon) {
       .filter((el) => !childToParent[el.type + "/" + el.id] && !isSite(el))
       .map((el) => {
         const key = el.type + "/" + el.id;
-        const name = el.tags?.name || "(Unnamed paragliding site)";
+        const name = el.tags?.name || "(Unnamed site)";
         const osmUrl = "https://www.openstreetmap.org/" + key;
         return { key, name, osmUrl, el };
       });
@@ -287,7 +285,6 @@ function loadMap(lat, lon) {
 
       // Marker/geometry drawing
       const name = el.tags?.name || "(Unnamed)";
-      let tagInfo = "";
       if (el.tags) {
         tagInfo = Object.entries(el.tags)
           .map(([k, v]) => `<b>${k}:</b> ${v}`)
@@ -364,8 +361,7 @@ function loadMap(lat, lon) {
   function updateSiteList(sites) {
     var list = document.getElementById("siteList");
     if (!sites.length) {
-      list.innerHTML =
-        "<li class='py-1'>No paragliding site found in view.</li>";
+      list.innerHTML = "<li class='py-1'>No sites found in view.</li>";
       return;
     }
     list.innerHTML = "";
