@@ -1,23 +1,19 @@
 window.openDrawer = function (contentHtml) {
-  var drawer = document.getElementById("infoDrawer");
+  var drawer = document.getElementById("sidebar");
   var content = document.getElementById("drawerContent");
   content.innerHTML = contentHtml;
-  drawer.style.display = "block";
-  setTimeout(() => {
-    drawer.classList.add("open");
-  }, 10); // allow for transition
+  drawer.classList.remove("hidden");
 };
 
-window.closeDrawer = function () {
-  var drawer = document.getElementById("infoDrawer");
-  drawer.classList.remove("open");
-  setTimeout(() => {
-    drawer.style.display = "none";
-  }, 300); // match CSS duration
-};
+function toggleSidebar() {
+  const sidebar = document.getElementById("sidebar");
+  sidebar.classList.toggle("hidden");
+  console.log("sidebar toggled");
+}
 
 window.generateDrawerContent = (el) => {
   const excludedTags = [
+    "name",
     "website",
     "sport",
     "site",
@@ -25,6 +21,7 @@ window.generateDrawerContent = (el) => {
     "free_flying:site",
     "type",
     "leisure",
+    "fixme",
   ];
   let tagInfo = "";
   if (el.tags) {
@@ -61,7 +58,7 @@ window.generateDrawerContent = (el) => {
 function panToFeature(el) {
   const center = elementCenter(el);
   if (center && map) {
-    window._map.setView(center, Math.max(window._map.getZoom(), 14), {
+    window._map.setView(center, Math.max(window._map.getZoom(), 15), {
       animate: true,
     });
   }
@@ -106,10 +103,11 @@ function loadMap(lat, lon) {
   // Initialize map center
   var lastCenter = { lat: lat, lon: lon };
 
-  var map = L.map("map", { maxZoom: 21 }).setView(
+  var map = L.map("map", { maxZoom: 18, zoomControl: false }).setView(
     [lastCenter.lat, lastCenter.lon],
     initialZoom,
   );
+
   window._map = map;
 
   // OSM standard tile layer
@@ -126,8 +124,11 @@ function loadMap(lat, lon) {
     },
   );
 
+  var zoomControl = new L.Control.Zoom({ position: "bottomright" }).addTo(map);
+
   // make osm the default tile set
   osm.addTo(map);
+  zoomControl.addTo(map);
 
   // Base maps object for layer control
   var baseMaps = {
@@ -318,7 +319,7 @@ function loadMap(lat, lon) {
           geometry: geom,
         };
         const layer = L.geoJSON(feature, {
-          style: { color: isParent ? "#0077cc" : "#aa3311", weight: 3 },
+          style: { color: isParent ? "#0077cc" : "#aa3311", weight: 6 },
           onEachFeature: (_, lyr) => {
             lyr.on("click", function () {
               openDrawer(generateDrawerContent(el));
