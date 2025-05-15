@@ -1,4 +1,4 @@
-window.openDrawer = function (contentHtml) {
+window.addDetailsToSidebar = function (contentHtml) {
   var drawer = document.getElementById("sidebar");
   var content = document.getElementById("drawerContent");
   content.innerHTML = contentHtml;
@@ -302,7 +302,7 @@ function loadMap(lat, lon) {
         const m = L.marker(center)
           .addTo(paraglidingLayer)
           .on("click", function () {
-            openDrawer(generateDrawerContent(el));
+            addDetailsToSidebar(generateDrawerContent(el));
           });
         markerOrLayerByKey[key] = m;
       } else if (showGeom) {
@@ -322,7 +322,7 @@ function loadMap(lat, lon) {
           style: { color: isParent ? "#0077cc" : "#aa3311", weight: 6 },
           onEachFeature: (_, lyr) => {
             lyr.on("click", function () {
-              openDrawer(generateDrawerContent(el));
+              addDetailsToSidebar(generateDrawerContent(el));
             });
           },
         }).addTo(paraglidingLayer);
@@ -375,7 +375,7 @@ function loadMap(lat, lon) {
         "py-1 pl-0.5 pr-1 hover:bg-blue-50 border-b border-gray-200 cursor-pointer flex items-center justify-between";
       el.onclick = function () {
         panToFeature(site.el);
-        openDrawer(generateDrawerContent(site.el));
+        addDetailsToSidebar(generateDrawerContent(site.el));
       };
       list.appendChild(el);
     });

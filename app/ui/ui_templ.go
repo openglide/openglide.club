@@ -142,7 +142,7 @@ func Map(lat, lon string) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "\"><!-- Sidebar toggle button (visible on small screens) --><button class=\"absolute top-4 left-4 z-1000 bg-gray-900 text-white rounded-full p-3 sm:hidden text-4xl\" onclick=\"toggleSidebar()\" aria-label=\"Show site list\" type=\"button\">☰</button><div id=\"sidebar\" class=\"hidden\n\t\t\t\t\tpt-24\n\t\t\t\t\tmax-w-full\n\t\t\t\t\tsm:block\n\t\t\t\t\tfixed sm:static left-0 top-0 h-full sm:h-auto  p-3 overflow-y-auto bg-gray-800 z-500  overflow-y-scroll\"><h3 class=\"text-xl font-bold\">Sites</h3><ul id=\"siteList\" class=\"list-none p-0\"></ul><div id=\"drawerContent\" class=\"pt-6\"></div></div><div class=\"grow bg-gray-700\"><div id=\"map\" class=\"h-full w-full\"></div></div></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "\"><!-- Sidebar toggle button (visible on small screens) --><button class=\"absolute top-4 left-4 z-1000 bg-gray-900 text-white rounded-full p-3 sm:hidden text-4xl\" onclick=\"toggleSidebar()\" aria-label=\"Show site list\" type=\"button\">☰</button><div id=\"sidebar\" class=\"hidden\n\t\t\t\t\tpt-24\n\t\t\t\t\tmax-w-full\n\t\t\t\t\tsm:block\n\t\t\t\t\tfixed sm:static left-0 top-0 h-full sm:h-auto sm:max-w-sm p-3 overflow-y-auto bg-gray-800 z-500  overflow-y-scroll\"><h3 class=\"text-xl font-bold\">Sites</h3><ul id=\"siteList\" class=\"list-none p-0\"></ul><div id=\"drawerContent\" class=\"pt-6\"></div></div><div class=\"grow bg-gray-700\"><div id=\"map\" class=\"h-full w-full\"></div></div></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
