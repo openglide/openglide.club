@@ -1,4 +1,4 @@
-window.addDetailsToSidebar = function (contentHtml) {
+window.renderSiteDetails = function (contentHtml) {
   var drawer = document.getElementById("sidebar");
   var content = document.getElementById("drawerContent");
   content.innerHTML = contentHtml;
@@ -8,8 +8,20 @@ window.addDetailsToSidebar = function (contentHtml) {
 function toggleSidebar() {
   const sidebar = document.getElementById("sidebar");
   sidebar.classList.toggle("hidden");
-  console.log("sidebar toggled");
 }
+
+window.siteSelected = function siteSelected(selectedSite) {
+  panToFeature(selectedSite);
+  var editorEl = document.getElementById("site_editor");
+  const editorButton = document.createElement("a");
+  const center = elementCenter(selectedSite);
+  editorButton.href = `https://editor.openglide.club/#disable_features=traffic_roads,buildings,building_parts,indoor,boundaries&map=17/${center[0]}/${center[1]}&background=Bing`;
+  editorButton.textContent = "Edit Site";
+  editorButton.target = "_blank";
+  editorButton.class = "before:content-['|']"
+  editorEl.replaceChildren(editorButton);
+  renderSiteDetails(generateDrawerContent(selectedSite));
+};
 
 window.generateDrawerContent = (el) => {
   const excludedTags = [
@@ -302,7 +314,7 @@ function loadMap(lat, lon) {
         const m = L.marker(center)
           .addTo(paraglidingLayer)
           .on("click", function () {
-            addDetailsToSidebar(generateDrawerContent(el));
+            siteSelected(el);
           });
         markerOrLayerByKey[key] = m;
       } else if (showGeom) {
@@ -322,7 +334,7 @@ function loadMap(lat, lon) {
           style: { color: isParent ? "#0077cc" : "#aa3311", weight: 6 },
           onEachFeature: (_, lyr) => {
             lyr.on("click", function () {
-              addDetailsToSidebar(generateDrawerContent(el));
+              siteSelected(el);
             });
           },
         }).addTo(paraglidingLayer);
@@ -374,8 +386,7 @@ function loadMap(lat, lon) {
       el.className =
         "py-1 pl-0.5 pr-1 hover:bg-blue-50 border-b border-gray-200 cursor-pointer flex items-center justify-between";
       el.onclick = function () {
-        panToFeature(site.el);
-        addDetailsToSidebar(generateDrawerContent(site.el));
+        siteSelected(site.el);
       };
       list.appendChild(el);
     });

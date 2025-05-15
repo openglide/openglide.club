@@ -18,10 +18,13 @@ templ App() {
 		</head>
 		<body class="h-screen bg-[url(/img/bg.webp)] bg-no-repeat bg-center bg-cover">
 			<!-- Header -->
-			<header class="h-1/10 bg-gradient-to-b from-gray-400  to-gray-800 grid grid-cols-3 items-center px-4">
-				<div class="text-5xl text-white font-bold font-logo"><a href="/" class="cursor-pointer">OG</a></div>
-				<div class="flex gap-8 text-md sm:text-2xl text-white font-bold place-self-center bg-gray-600 p-3 rounded">
-					<a href="/about">About</a>
+			<header class="h-1/10 bg-gradient-to-b from-gray-400 to-gray-800 grid grid-cols-2 content-center items-end px-4">
+				<div class="text-5xl text-white font-bold font-logo"><a href="/" class="cursor-pointer">OGC</a></div>
+				<div class="flex text-md sm:text-2xl text-white font-bold p-3">
+					<div class="flex gap-3">
+						<a href="/about" class="flex-none ">About</a>
+						<div id="site_editor"></div>
+					</div>
 				</div>
 			</header>
 			<main class="h-9/10 flex items-center justify-center bg-white/10 backdrop-blur-xs ">
@@ -61,7 +64,7 @@ templ Map(lat, lon string) {
 		>
 			<!-- Sidebar toggle button (visible on small screens) -->
 			<button
-				class="absolute top-4 left-4 z-1000 bg-gray-900 text-white rounded-full p-3 sm:hidden text-4xl"
+				class="absolute top-4 left-4 h-16 w-16 z-1000 bg-gray-900 text-white rounded-full p-3 text-4xl"
 				onclick="toggleSidebar()"
 				aria-label="Show site list"
 				type="button"
@@ -72,9 +75,9 @@ templ Map(lat, lon string) {
 				id="sidebar"
 				class="hidden
 					pt-24
-					max-w-full
-					sm:block
-					fixed sm:static left-0 top-0 h-full sm:h-auto sm:max-w-sm p-3 overflow-y-auto bg-gray-800 z-500  overflow-y-scroll"
+					w-full
+					sm:static sm:block sm:h-auto sm:min-w-xs sm:max-w-sm
+					fixed  left-0 top-0 h-full  p-3 overflow-y-auto bg-gray-800 z-500  overflow-y-scroll"
 			>
 				<h3 class="text-xl font-bold">Sites</h3>
 				<ul id="siteList" class="list-none p-0"></ul>

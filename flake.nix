@@ -100,7 +100,7 @@
           };
 
           settings.processes.templ = {
-            command = ''../templ/result/bin/templ generate --watch-pattern '(.+\.js$)|(.+\.go$)|(.+\.templ$)|(.+_templ\.txt$)|(.+\.css$)' --watch --proxy="http://localhost:3000" -cmd app'';
+            command = ''../templ/result/bin/templ generate --watch-pattern '(.+\.js$)|(.+\.go$)|(.+\.templ$)|(.+_templ\.txt$)|(.+\.css$)' --watch --proxy="http://localhost:4000" -cmd app'';
             depends_on."postgres".condition = "process_healthy";
           };
 

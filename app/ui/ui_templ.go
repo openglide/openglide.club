@@ -31,7 +31,7 @@ func App() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<!doctype html><html><head><title>Openglide :: Open source paraglide and hangglide sites</title><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"><link rel=\"stylesheet\" href=\"https://unpkg.com/leaflet@1.9.4/dist/leaflet.css\"><script src=\"https://unpkg.com/leaflet@1.9.4/dist/leaflet.js\"></script><link href=\"css/styles.css\" rel=\"stylesheet\"><script src=\"js/hyperscript.js\" async></script><script src=\"js/htmx.js\" async></script><script src=\"js/search.js\" async></script></head><body class=\"h-screen bg-[url(/img/bg.webp)] bg-no-repeat bg-center bg-cover\"><!-- Header --><header class=\"h-1/10 bg-gradient-to-b from-gray-400  to-gray-800 grid grid-cols-3 items-center px-4\"><div class=\"text-5xl text-white font-bold font-logo\"><a href=\"/\" class=\"cursor-pointer\">OG</a></div><div class=\"flex gap-8 text-md sm:text-2xl text-white font-bold place-self-center bg-gray-600 p-3 rounded\"><a href=\"/about\">About</a></div></header><main class=\"h-9/10 flex items-center justify-center bg-white/10 backdrop-blur-xs \"><div class=\"flex h-full text-white\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<!doctype html><html><head><title>Openglide :: Open source paraglide and hangglide sites</title><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"><link rel=\"stylesheet\" href=\"https://unpkg.com/leaflet@1.9.4/dist/leaflet.css\"><script src=\"https://unpkg.com/leaflet@1.9.4/dist/leaflet.js\"></script><link href=\"css/styles.css\" rel=\"stylesheet\"><script src=\"js/hyperscript.js\" async></script><script src=\"js/htmx.js\" async></script><script src=\"js/search.js\" async></script></head><body class=\"h-screen bg-[url(/img/bg.webp)] bg-no-repeat bg-center bg-cover\"><!-- Header --><header class=\"h-1/10 bg-gradient-to-b from-gray-400 to-gray-800 grid grid-cols-2 content-center items-end px-4\"><div class=\"text-5xl text-white font-bold font-logo\"><a href=\"/\" class=\"cursor-pointer\">OGC</a></div><div class=\"flex text-md sm:text-2xl text-white font-bold p-3\"><div class=\"flex gap-3\"><a href=\"/about\" class=\"flex-none \">About</a><div id=\"site_editor\"></div></div></div></header><main class=\"h-9/10 flex items-center justify-center bg-white/10 backdrop-blur-xs \"><div class=\"flex h-full text-white\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -136,13 +136,13 @@ func Map(lat, lon string) templ.Component {
 			var templ_7745c5c3_Var6 string
 			templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("on intersection loadMap(%s,%s)", lat, lon))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `app/ui/ui.templ`, Line: 60, Col: 62}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `app/ui/ui.templ`, Line: 63, Col: 62}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "\"><!-- Sidebar toggle button (visible on small screens) --><button class=\"absolute top-4 left-4 z-1000 bg-gray-900 text-white rounded-full p-3 sm:hidden text-4xl\" onclick=\"toggleSidebar()\" aria-label=\"Show site list\" type=\"button\">☰</button><div id=\"sidebar\" class=\"hidden\n\t\t\t\t\tpt-24\n\t\t\t\t\tmax-w-full\n\t\t\t\t\tsm:block\n\t\t\t\t\tfixed sm:static left-0 top-0 h-full sm:h-auto sm:max-w-sm p-3 overflow-y-auto bg-gray-800 z-500  overflow-y-scroll\"><h3 class=\"text-xl font-bold\">Sites</h3><ul id=\"siteList\" class=\"list-none p-0\"></ul><div id=\"drawerContent\" class=\"pt-6\"></div></div><div class=\"grow bg-gray-700\"><div id=\"map\" class=\"h-full w-full\"></div></div></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "\"><!-- Sidebar toggle button (visible on small screens) --><button class=\"absolute top-4 left-4 h-16 w-16 z-1000 bg-gray-900 text-white rounded-full p-3 text-4xl\" onclick=\"toggleSidebar()\" aria-label=\"Show site list\" type=\"button\">☰</button><div id=\"sidebar\" class=\"hidden\n\t\t\t\t\tpt-24\n\t\t\t\t\tw-full\n\t\t\t\t\tsm:static sm:block sm:h-auto sm:min-w-xs sm:max-w-sm\n\t\t\t\t\tfixed  left-0 top-0 h-full  p-3 overflow-y-auto bg-gray-800 z-500  overflow-y-scroll\"><h3 class=\"text-xl font-bold\">Sites</h3><ul id=\"siteList\" class=\"list-none p-0\"></ul><div id=\"drawerContent\" class=\"pt-6\"></div></div><div class=\"grow bg-gray-700\"><div id=\"map\" class=\"h-full w-full\"></div></div></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
