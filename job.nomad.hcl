@@ -15,7 +15,7 @@ job "openglide" {
 
     network {
       port "http" {
-        to           = 3000
+        to           = 4000
         host_network = "tailnet"
       }
     }
