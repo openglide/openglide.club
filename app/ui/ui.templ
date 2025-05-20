@@ -2,20 +2,25 @@ package ui
 
 import "fmt"
 
+templ Head() {
+	<head>
+		<title>Openglide :: Open source paraglide and hangglide sites</title>
+		<meta charset="UTF-8"/>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+		<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+		<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+		<link href="css/styles.css" rel="stylesheet"/>
+		<script src="js/hyperscript.js" async></script>
+		<script src="js/htmx.js" async></script>
+		<script src="js/search.js" async></script>
+		<script src="js/app.js"></script>
+	</head>
+}
+
 templ App() {
 	<!DOCTYPE html>
 	<html>
-		<head>
-			<title>Openglide :: Open source paraglide and hangglide sites</title>
-			<meta charset="UTF-8"/>
-			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-			<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
-			<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-			<link href="css/styles.css" rel="stylesheet"/>
-			<script src="js/hyperscript.js" async></script>
-			<script src="js/htmx.js" async></script>
-			<script src="js/search.js" async></script>
-		</head>
+		@Head()
 		<body class="h-screen bg-[url(/img/bg.webp)] bg-no-repeat bg-center bg-cover">
 			<!-- Header -->
 			<header class="h-1/10 bg-gradient-to-b from-gray-400 to-gray-800 grid grid-cols-2 content-center items-end px-4">
@@ -28,7 +33,7 @@ templ App() {
 				</div>
 			</header>
 			<main class="h-9/10 flex items-center justify-center bg-white/10 backdrop-blur-xs ">
-				<div class="flex h-full text-white">
+				<div class="flex h-full w-full text-white">
 					{ children... }
 				</div>
 			</main>
@@ -47,47 +52,63 @@ templ About() {
 			<div class="text-lg sm:text-xl">
 				<p class="pb-6">Openglide is a work in progress. Anyone is welcome and encouraged <a href="https://github.com/openglide/openglide.club" class="underline">to contribute</a>. Here are some things coming in the near future.</p>
 				<p>- Add and update gliding sites</p>
-				<p>- Embeddable site maps, for adding interactive maps to club sites</p>
 			</div>
 		</section>
 	}
 }
 
-// Map renders a map, along with a side bar and "info" drawer for showing site details when sites are selected
-templ Map(lat, lon string) {
+// AppMap renders a map, along with the app navigation header, and an info side bar for showing site details when sites are selected
+templ AppMap(lat, lon string) {
 	@App() {
-		<script src="js/app.js"></script>
-		<div
-			id="container"
-			class="flex w-screen gap-0"
-			_={ fmt.Sprintf("on intersection loadMap(%s,%s)", lat, lon) }
+		@Map(lat, lon, false)
+	}
+}
+
+// Map renders just the map
+templ Map(lat, lon string, embedded bool) {
+	@Head()
+	<div
+		id="container"
+		class="flex w-full h-full text-white"
+		_={ fmt.Sprintf("on intersection loadMap(%s,%s)", lat, lon) }
+	>
+		<!-- Sidebar toggle button (visible on small screens) -->
+		<button
+			class="absolute top-4 left-4 h-16 w-16 z-1000 bg-gray-900 text-white rounded-full p-3 text-4xl"
+			onclick="toggleSidebar()"
+			aria-label="Show site list"
+			type="button"
 		>
-			<!-- Sidebar toggle button (visible on small screens) -->
+			☰
+		</button>
+		// only show the embed button when the map isn't already embedded
+		if !embedded {
 			<button
-				class="absolute top-4 left-4 h-16 w-16 z-1000 bg-gray-900 text-white rounded-full p-3 text-4xl"
+				class="absolute top-4 left-24 h-16 z-1000 bg-gray-900 text-white rounded-lg p-3 text-4xl"
 				onclick="toggleSidebar()"
 				aria-label="Show site list"
 				type="button"
+				_="on click writeText(window.embedURL()) on navigator.clipboard then put 'Copied!' into me"
 			>
-				☰
+				Embed
 			</button>
-			<div
-				id="sidebar"
-				class="hidden
+		}
+		<div
+			id="sidebar"
+			class="hidden
 					pt-24
 					w-full
-					sm:static sm:block sm:h-auto sm:min-w-xs sm:max-w-sm
-					fixed  left-0 top-0 h-full  p-3 overflow-y-auto bg-gray-800 z-500  overflow-y-scroll"
-			>
-				<h3 class="text-xl font-bold">Sites</h3>
-				<ul id="siteList" class="list-none p-0"></ul>
-				<div id="drawerContent" class="pt-6"></div>
-			</div>
-			<div class="grow bg-gray-700">
-				<div id="map" class="h-full w-full"></div>
-			</div>
+					lg:static lg:block lg:h-auto lg:min-w-xs lg:max-w-sm
+					fixed left-0 top-0 h-full  p-3 overflow-y-auto bg-gray-800 z-500  overflow-y-scroll"
+		>
+			<h3 class="text-xl font-bold">Sites</h3>
+			<ul id="siteList" class="list-none p-0"></ul>
+			<div id="drawerContent" class="pt-6"></div>
 		</div>
-	}
+		<div class="grow bg-gray-700">
+			<div id="map" class="h-full w-full"></div>
+		</div>
+	</div>
 }
 
 // Home is the openglide.club homge page

@@ -37,7 +37,13 @@ func Router() (r chi.Router) {
 	r.Get("/map", func(w http.ResponseWriter, r *http.Request) {
 		lat := r.URL.Query().Get("lat")
 		lon := r.URL.Query().Get("lon")
-		_ = ui.Map(lat, lon).Render(r.Context(), w)
+		_ = ui.AppMap(lat, lon).Render(r.Context(), w)
+	})
+
+	r.Get("/embed", func(w http.ResponseWriter, r *http.Request) {
+		lat := r.URL.Query().Get("lat")
+		lon := r.URL.Query().Get("lon")
+		_ = ui.Map(lat, lon, true).Render(r.Context(), w)
 	})
 
 	return

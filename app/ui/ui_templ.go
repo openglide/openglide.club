@@ -10,7 +10,7 @@ import templruntime "github.com/a-h/templ/runtime"
 
 import "fmt"
 
-func App() templ.Component {
+func Head() templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -31,15 +31,52 @@ func App() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<!doctype html><html><head><title>Openglide :: Open source paraglide and hangglide sites</title><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"><link rel=\"stylesheet\" href=\"https://unpkg.com/leaflet@1.9.4/dist/leaflet.css\"><script src=\"https://unpkg.com/leaflet@1.9.4/dist/leaflet.js\"></script><link href=\"css/styles.css\" rel=\"stylesheet\"><script src=\"js/hyperscript.js\" async></script><script src=\"js/htmx.js\" async></script><script src=\"js/search.js\" async></script></head><body class=\"h-screen bg-[url(/img/bg.webp)] bg-no-repeat bg-center bg-cover\"><!-- Header --><header class=\"h-1/10 bg-gradient-to-b from-gray-400 to-gray-800 grid grid-cols-2 content-center items-end px-4\"><div class=\"text-5xl text-white font-bold font-logo\"><a href=\"/\" class=\"cursor-pointer\">OGC</a></div><div class=\"flex text-md sm:text-2xl text-white font-bold p-3\"><div class=\"flex gap-3\"><a href=\"/about\" class=\"flex-none \">About</a><div id=\"site_editor\"></div></div></div></header><main class=\"h-9/10 flex items-center justify-center bg-white/10 backdrop-blur-xs \"><div class=\"flex h-full text-white\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<head><title>Openglide :: Open source paraglide and hangglide sites</title><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"><link rel=\"stylesheet\" href=\"https://unpkg.com/leaflet@1.9.4/dist/leaflet.css\"><script src=\"https://unpkg.com/leaflet@1.9.4/dist/leaflet.js\"></script><link href=\"css/styles.css\" rel=\"stylesheet\"><script src=\"js/hyperscript.js\" async></script><script src=\"js/htmx.js\" async></script><script src=\"js/search.js\" async></script><script src=\"js/app.js\"></script></head>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templ_7745c5c3_Var1.Render(ctx, templ_7745c5c3_Buffer)
+		return nil
+	})
+}
+
+func App() templ.Component {
+	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
+		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
+		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
+			return templ_7745c5c3_CtxErr
+		}
+		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
+		if !templ_7745c5c3_IsBuffer {
+			defer func() {
+				templ_7745c5c3_BufErr := templruntime.ReleaseBuffer(templ_7745c5c3_Buffer)
+				if templ_7745c5c3_Err == nil {
+					templ_7745c5c3_Err = templ_7745c5c3_BufErr
+				}
+			}()
+		}
+		ctx = templ.InitializeContext(ctx)
+		templ_7745c5c3_Var2 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var2 == nil {
+			templ_7745c5c3_Var2 = templ.NopComponent
+		}
+		ctx = templ.ClearChildren(ctx)
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<!doctype html><html>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</div></main></body></html>")
+		templ_7745c5c3_Err = Head().Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<body class=\"h-screen bg-[url(/img/bg.webp)] bg-no-repeat bg-center bg-cover\"><!-- Header --><header class=\"h-1/10 bg-gradient-to-b from-gray-400 to-gray-800 grid grid-cols-2 content-center items-end px-4\"><div class=\"text-5xl text-white font-bold font-logo\"><a href=\"/\" class=\"cursor-pointer\">OGC</a></div><div class=\"flex text-md sm:text-2xl text-white font-bold p-3\"><div class=\"flex gap-3\"><a href=\"/about\" class=\"flex-none \">About</a><div id=\"site_editor\"></div></div></div></header><main class=\"h-9/10 flex items-center justify-center bg-white/10 backdrop-blur-xs \"><div class=\"flex h-full w-full text-white\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templ_7745c5c3_Var2.Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "</div></main></body></html>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -64,12 +101,12 @@ func About() templ.Component {
 			}()
 		}
 		ctx = templ.InitializeContext(ctx)
-		templ_7745c5c3_Var2 := templ.GetChildren(ctx)
-		if templ_7745c5c3_Var2 == nil {
-			templ_7745c5c3_Var2 = templ.NopComponent
+		templ_7745c5c3_Var3 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var3 == nil {
+			templ_7745c5c3_Var3 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Var3 := templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
+		templ_7745c5c3_Var4 := templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 			templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 			templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
 			if !templ_7745c5c3_IsBuffer {
@@ -81,13 +118,13 @@ func About() templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<section class=\"flex flex-col pt-18 p-8 gap-8 sm:gap-16 sm:m-32 sm:p-32 items-center text-center bg-black/50 backdrop-blur-xs sm:rounded-xl overflow-y-scroll sm:overflow-y-clip\"><p class=\"text-4xl font-bold text-wrap\">Openglide is a community-mapped hanggliding and paragliding site directory</p><p class=\"text-lg sm:text-xl font-bold\">Map data for openglide comes from <a href=\"https://openstreetmap.org\" class=\"underline\">Open Street Maps</a>.</p><div class=\"text-lg sm:text-xl\"><p class=\"pb-6\">Openglide is a work in progress. Anyone is welcome and encouraged <a href=\"https://github.com/openglide/openglide.club\" class=\"underline\">to contribute</a>. Here are some things coming in the near future.</p><p>- Add and update gliding sites</p><p>- Embeddable site maps, for adding interactive maps to club sites</p></div></section>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<section class=\"flex flex-col pt-18 p-8 gap-8 sm:gap-16 sm:m-32 sm:p-32 items-center text-center bg-black/50 backdrop-blur-xs sm:rounded-xl overflow-y-scroll sm:overflow-y-clip\"><p class=\"text-4xl font-bold text-wrap\">Openglide is a community-mapped hanggliding and paragliding site directory</p><p class=\"text-lg sm:text-xl font-bold\">Map data for openglide comes from <a href=\"https://openstreetmap.org\" class=\"underline\">Open Street Maps</a>.</p><div class=\"text-lg sm:text-xl\"><p class=\"pb-6\">Openglide is a work in progress. Anyone is welcome and encouraged <a href=\"https://github.com/openglide/openglide.club\" class=\"underline\">to contribute</a>. Here are some things coming in the near future.</p><p>- Add and update gliding sites</p></div></section>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			return nil
 		})
-		templ_7745c5c3_Err = App().Render(templ.WithChildren(ctx, templ_7745c5c3_Var3), templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = App().Render(templ.WithChildren(ctx, templ_7745c5c3_Var4), templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -95,8 +132,8 @@ func About() templ.Component {
 	})
 }
 
-// Map renders a map, along with a side bar and "info" drawer for showing site details when sites are selected
-func Map(lat, lon string) templ.Component {
+// AppMap renders a map, along with the app navigation header, and an info side bar for showing site details when sites are selected
+func AppMap(lat, lon string) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -112,12 +149,12 @@ func Map(lat, lon string) templ.Component {
 			}()
 		}
 		ctx = templ.InitializeContext(ctx)
-		templ_7745c5c3_Var4 := templ.GetChildren(ctx)
-		if templ_7745c5c3_Var4 == nil {
-			templ_7745c5c3_Var4 = templ.NopComponent
+		templ_7745c5c3_Var5 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var5 == nil {
+			templ_7745c5c3_Var5 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Var5 := templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
+		templ_7745c5c3_Var6 := templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 			templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 			templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
 			if !templ_7745c5c3_IsBuffer {
@@ -129,26 +166,70 @@ func Map(lat, lon string) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<script src=\"js/app.js\"></script> <div id=\"container\" class=\"flex w-screen gap-0\" _=\"")
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			var templ_7745c5c3_Var6 string
-			templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("on intersection loadMap(%s,%s)", lat, lon))
-			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `app/ui/ui.templ`, Line: 63, Col: 62}
-			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "\"><!-- Sidebar toggle button (visible on small screens) --><button class=\"absolute top-4 left-4 h-16 w-16 z-1000 bg-gray-900 text-white rounded-full p-3 text-4xl\" onclick=\"toggleSidebar()\" aria-label=\"Show site list\" type=\"button\">☰</button><div id=\"sidebar\" class=\"hidden\n\t\t\t\t\tpt-24\n\t\t\t\t\tw-full\n\t\t\t\t\tsm:static sm:block sm:h-auto sm:min-w-xs sm:max-w-sm\n\t\t\t\t\tfixed  left-0 top-0 h-full  p-3 overflow-y-auto bg-gray-800 z-500  overflow-y-scroll\"><h3 class=\"text-xl font-bold\">Sites</h3><ul id=\"siteList\" class=\"list-none p-0\"></ul><div id=\"drawerContent\" class=\"pt-6\"></div></div><div class=\"grow bg-gray-700\"><div id=\"map\" class=\"h-full w-full\"></div></div></div>")
+			templ_7745c5c3_Err = Map(lat, lon, false).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			return nil
 		})
-		templ_7745c5c3_Err = App().Render(templ.WithChildren(ctx, templ_7745c5c3_Var5), templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = App().Render(templ.WithChildren(ctx, templ_7745c5c3_Var6), templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		return nil
+	})
+}
+
+// Map renders just the map
+func Map(lat, lon string, embedded bool) templ.Component {
+	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
+		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
+		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
+			return templ_7745c5c3_CtxErr
+		}
+		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
+		if !templ_7745c5c3_IsBuffer {
+			defer func() {
+				templ_7745c5c3_BufErr := templruntime.ReleaseBuffer(templ_7745c5c3_Buffer)
+				if templ_7745c5c3_Err == nil {
+					templ_7745c5c3_Err = templ_7745c5c3_BufErr
+				}
+			}()
+		}
+		ctx = templ.InitializeContext(ctx)
+		templ_7745c5c3_Var7 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var7 == nil {
+			templ_7745c5c3_Var7 = templ.NopComponent
+		}
+		ctx = templ.ClearChildren(ctx)
+		templ_7745c5c3_Err = Head().Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "<div id=\"container\" class=\"flex w-full h-full text-white\" _=\"")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		var templ_7745c5c3_Var8 string
+		templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("on intersection loadMap(%s,%s)", lat, lon))
+		if templ_7745c5c3_Err != nil {
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `app/ui/ui.templ`, Line: 73, Col: 61}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "\"><!-- Sidebar toggle button (visible on small screens) --><button class=\"absolute top-4 left-4 h-16 w-16 z-1000 bg-gray-900 text-white rounded-full p-3 text-4xl\" onclick=\"toggleSidebar()\" aria-label=\"Show site list\" type=\"button\">☰</button>")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		if !embedded {
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "<button class=\"absolute top-4 left-24 h-16 z-1000 bg-gray-900 text-white rounded-lg p-3 text-4xl\" onclick=\"toggleSidebar()\" aria-label=\"Show site list\" type=\"button\" _=\"on click writeText(window.embedURL()) on navigator.clipboard then put &#39;Copied!&#39; into me\">Embed</button>")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "<div id=\"sidebar\" class=\"hidden\n\t\t\t\t\tpt-24\n\t\t\t\t\tw-full\n\t\t\t\t\tlg:static lg:block lg:h-auto lg:min-w-xs lg:max-w-sm\n\t\t\t\t\tfixed left-0 top-0 h-full  p-3 overflow-y-auto bg-gray-800 z-500  overflow-y-scroll\"><h3 class=\"text-xl font-bold\">Sites</h3><ul id=\"siteList\" class=\"list-none p-0\"></ul><div id=\"drawerContent\" class=\"pt-6\"></div></div><div class=\"grow bg-gray-700\"><div id=\"map\" class=\"h-full w-full\"></div></div></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -173,12 +254,12 @@ func Home() templ.Component {
 			}()
 		}
 		ctx = templ.InitializeContext(ctx)
-		templ_7745c5c3_Var7 := templ.GetChildren(ctx)
-		if templ_7745c5c3_Var7 == nil {
-			templ_7745c5c3_Var7 = templ.NopComponent
+		templ_7745c5c3_Var9 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var9 == nil {
+			templ_7745c5c3_Var9 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Var8 := templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
+		templ_7745c5c3_Var10 := templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 			templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 			templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
 			if !templ_7745c5c3_IsBuffer {
@@ -190,13 +271,13 @@ func Home() templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "<div id=\"search_box\" class=\"flex flex-col items-center justify-center \"><div class=\"relative flex w-screen items-center justify-center\"><div class=\"relative w-full p-3 text-sm sm:text-2xl sm:p-0 sm:w-1/2 text-bold  flex items-center justify-center\"><input type=\"text\" id=\"searchInput\" placeholder=\"Search by name, or coordinates\" class=\"h-16 w-full flex-grow px-5 py-1 border border-gray-300 rounded-l-lg focus:outline-none focus:ring-0 border-0 bg-black/25 backdrop-blur-sm  font-bold\" _=\"on keyup debounced at 400ms showSearchSuggestions()\"> <button id=\"search_button\" class=\"h-16 px-8 py-1 rounded-r-lg bg-cyan-600 text-sm sm:text-lg text-white font-bold  hover:bg-cyan-700 hover:cursor-pointer\" _=\"on click doSearch()\">Go</button><div id=\"search_suggestions\" class=\"absolute top-full p-3 w-full sm:p-0 p-2 mt-1 rounded bg-black/25 backdrop-blur-sm shadow z-[10000] max-h-56 overflow-y-auto text-white font-bold\" style=\"display:none;\"></div></div></div></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "<div id=\"search_box\" class=\"flex flex-col items-center justify-center \"><div class=\"relative flex w-screen items-center justify-center\"><div class=\"relative w-full p-3 text-sm sm:text-2xl sm:p-0 sm:w-1/2 text-bold  flex items-center justify-center\"><input type=\"text\" id=\"searchInput\" placeholder=\"Search by name, or coordinates\" class=\"h-16 w-full flex-grow px-5 py-1 border border-gray-300 rounded-l-lg focus:outline-none focus:ring-0 border-0 bg-black/25 backdrop-blur-sm  font-bold\" _=\"on keyup debounced at 400ms showSearchSuggestions()\"> <button id=\"search_button\" class=\"h-16 px-8 py-1 rounded-r-lg bg-cyan-600 text-sm sm:text-lg text-white font-bold  hover:bg-cyan-700 hover:cursor-pointer\" _=\"on click doSearch()\">Go</button><div id=\"search_suggestions\" class=\"absolute top-full p-3 w-full sm:p-0 p-2 mt-1 rounded bg-black/25 backdrop-blur-sm shadow z-[10000] max-h-56 overflow-y-auto text-white font-bold\" style=\"display:none;\"></div></div></div></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			return nil
 		})
-		templ_7745c5c3_Err = App().Render(templ.WithChildren(ctx, templ_7745c5c3_Var8), templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = App().Render(templ.WithChildren(ctx, templ_7745c5c3_Var10), templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

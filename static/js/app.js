@@ -1,4 +1,4 @@
-window.renderSiteDetails = function (contentHtml) {
+window.renderSiteDetails = function(contentHtml) {
   var drawer = document.getElementById("sidebar");
   var content = document.getElementById("drawerContent");
   content.innerHTML = contentHtml;
@@ -12,7 +12,12 @@ function toggleSidebar() {
 
 window.siteSelected = function siteSelected(selectedSite) {
   panToFeature(selectedSite);
+  renderSiteDetails(generateDrawerContent(selectedSite));
   var editorEl = document.getElementById("site_editor");
+  // The editor element isn't available in embedded mode
+  if (editorEl === null) {
+    return
+  }
   const editorButton = document.createElement("a");
   const center = elementCenter(selectedSite);
   editorButton.href = `https://editor.openglide.club/#disable_features=traffic_roads,buildings,building_parts,indoor,boundaries&map=17/${center[0]}/${center[1]}&background=Bing`;
@@ -20,8 +25,24 @@ window.siteSelected = function siteSelected(selectedSite) {
   editorButton.target = "_blank";
   editorButton.class = "before:content-['|']"
   editorEl.replaceChildren(editorButton);
-  renderSiteDetails(generateDrawerContent(selectedSite));
 };
+
+// osmId returns the OSM id of a feature, or empty string if not an OSM feature
+window.osmId = function(feature) {
+  switch (true) {
+    case feature.id !== null && feature.id !== undefined:
+      return `${feature.type}/${feature.id}`
+    case feature.ref !== null && feature.ref !== undefined:
+      return `${feature.type}/${feature.ref}`
+    default:
+      return console.error("not a feature")
+  }
+}
+
+window.embedURL = function() {
+  const currentUrl = window.location.href;
+  return currentUrl.replace("/map", "/embed")
+}
 
 window.generateDrawerContent = (el) => {
   const excludedTags = [
@@ -61,14 +82,14 @@ window.generateDrawerContent = (el) => {
     : "";
   return `
     <div>
-      <h3 class="text-xl font-bold mb-3">${el.tags?.name || "(Unnamed site/feature)"} ${siteGuide}</h3>   
+      <h3 class="text-xl font-bold mb-3">${el.tags?.name || "(Unnamed site/feature)"} ${siteGuide}</h3>
       ${tagInfo}
     </div>
   `;
 };
 // panToFeatures pans the map view to the specified feature
 function panToFeature(el) {
-  const center = elementCenter(el);
+  const center = bestCoordinate(el);
   if (center && map) {
     window._map.setView(center, Math.max(window._map.getZoom(), 15), {
       animate: true,
@@ -76,6 +97,34 @@ function panToFeature(el) {
   }
 }
 
+// bestCoordinatte returns the "best" coordinate for a map feature
+//
+// For points, it is the point's lat/lon
+// For feature's with a "center point", it is that feature's center point
+// For free flying sites, it is somewhat arbitrarily the site's first launch, if it has one, otherwise its first LZ
+function bestCoordinate(el) {
+  const isNode = el.type === "node";
+  if (isNode) {
+    return [el.lat, el.lon];
+  } else if (el.center) {
+    return [el.center.lat, el.center.lon];
+  } else if (el.geometry) { // It's a free flying site. TODO all things with "gemoetry are not necessarily sites, but this is a decent guess for now
+    // fallback: average via leaflet bounds
+    const latlngs = el.geometry.map((pt) => [pt.lat, pt.lon]);
+    const bounds = L.polyline(latlngs).getBounds();
+    const c = bounds.getCenter();
+    return [c.lat, c.lng];
+  } else if (el.bounds) {
+    const b = el.bounds;
+    const bounds = L.polyline([
+      [b.maxlat, b.maxlon],
+      [b.minlat, b.minlon],
+    ]).getBounds();
+    const c = bounds.getCenter();
+    return [c.lat, c.lng];
+  }
+  return null;
+}
 // elementCenter returns the center point of an element
 function elementCenter(el) {
   const isNode = el.type === "node";
@@ -98,7 +147,6 @@ function elementCenter(el) {
     const c = bounds.getCenter();
     return [c.lat, c.lng];
   }
-  console.log("el", el);
   return null;
 }
 
@@ -240,13 +288,14 @@ function loadMap(lat, lon) {
     // 1. Split elements into relations/parents and non-site members
     const elements = opData.elements || [];
     const parents = {}; // key = site rel id; val = osm object
-    const childToParent = {}; // key = child OSM id, value = parent rel key
+    const memberToParent = {}; // key = child OSM id, value = parent OSM id
 
     // First pass: find all "sites", i.e. sites that contain one or more free flying features like landing zones or launches
     elements
       .filter((el) => isSite(el))
       .forEach((el) => {
-        parents["relation/" + el.id] = {
+        const parentID = window.osmId(el)
+        parents[parentID] = {
           el,
           memberKeys: [],
           members: [],
@@ -257,11 +306,11 @@ function loadMap(lat, lon) {
     elements
       .filter((el) => isSite(el) && hasMembers(el))
       .map((el) => {
-        const parentKey = "relation/" + el.id;
+        const parentID = window.osmId(el);
         el.members.forEach((m) => {
-          const memKey = m.type + "/" + m.ref;
-          parents[parentKey].memberKeys.push(memKey);
-          childToParent[memKey] = parentKey;
+          const memberID = window.osmId(m)
+          parents[parentID].memberKeys.push(memberID);
+          memberToParent[memberID] = parentID;
         });
       });
 
@@ -279,22 +328,26 @@ function loadMap(lat, lon) {
     });
 
     // fallback: nodes/ways in view that aren't members of a relation, but are sporty
-    standaloneSites = elements
-      .filter((el) => !childToParent[el.type + "/" + el.id] && !isSite(el))
+    const standaloneSites = elements
+      .filter((el) => !memberToParent[window.osmId(el)] && !isSite(el))
       .map((el) => {
-        const key = el.type + "/" + el.id;
+        const key = window.osmId(el);
         const name = el.tags?.name || "(Unnamed site)";
-        const osmUrl = "https://www.openstreetmap.org/" + key;
+        const osmUrl = "https://www.o!enstreetmap.org/" + key;
         return { key, name, osmUrl, el };
       });
+    const standaloneSitesMap = standaloneSites.reduce(function(map, obj) {
+      map[obj.key] = obj;
+      return map;
+    }, {});
     sidebarSites = sidebarSites.concat(standaloneSites);
 
     // 3. Prepare all features for rendering on map but mark which ones belong to a parent
     // Add marker/geometry for all elements, but record if it's a parent or a child
-    const markerOrLayerByKey = {};
+    const markerOrLayerByFeatureID = {};
     elements.forEach((el) => {
-      const key = el.type + "/" + el.id;
-      const isParent = !!parents[key];
+      const featureID = window.osmId(el);
+      const isParent = !!parents[featureID];
 
       // Marker/geometry drawing
       const name = el.tags?.name || "(Unnamed)";
@@ -303,26 +356,24 @@ function loadMap(lat, lon) {
           .map(([k, v]) => `<b>${k}:</b> ${v}`)
           .join("<br>");
       }
-      const osmUrl = "https://www.openstreetmap.org/" + key;
-      const isNode = el.type === "node";
+      const osmUrl = "https://www.openstreetmap.org/" + featureID;
       const center = elementCenter(el);
-      const showMarker = isNode || (!isNode && currentZoom < geometryZoom);
-      const showGeom =
-        !isParent && !isNode && currentZoom >= geometryZoom && getGeometry(el);
-
-      if (showMarker && center) {
+      const isStandaloneSite = standaloneSitesMap[featureID]
+      const showMarker = isParent || isStandaloneSite || currentZoom >= geometryZoom
+      const showGeom = getGeometry(el) !== null && currentZoom >= geometryZoom;
+      if (showMarker && center && !showGeom) {
         const m = L.marker(center)
           .addTo(paraglidingLayer)
-          .on("click", function () {
+          .on("click", function() {
             siteSelected(el);
           });
-        markerOrLayerByKey[key] = m;
-      } else if (showGeom) {
+        markerOrLayerByFeatureID[featureID] = m;
+      } else if (showGeom && !isParent) {
         const coords = getGeometry(el).map((pt) => [pt.lon, pt.lat]);
         const geom =
           coords.length > 2 &&
-          coords[0][0] === coords[coords.length - 1][0] &&
-          coords[0][1] === coords[coords.length - 1][1]
+            coords[0][0] === coords[coords.length - 1][0] &&
+            coords[0][1] === coords[coords.length - 1][1]
             ? { type: "Polygon", coordinates: [coords] }
             : { type: "LineString", coordinates: coords };
         const feature = {
@@ -333,13 +384,13 @@ function loadMap(lat, lon) {
         const layer = L.geoJSON(feature, {
           style: { color: isParent ? "#0077cc" : "#aa3311", weight: 6 },
           onEachFeature: (_, lyr) => {
-            lyr.on("click", function () {
+            lyr.on("click", function() {
               siteSelected(el);
             });
           },
         }).addTo(paraglidingLayer);
 
-        markerOrLayerByKey[key] = layer;
+        markerOrLayerByFeatureID[featureID] = layer;
       }
     });
 
@@ -378,14 +429,14 @@ function loadMap(lat, lon) {
       return;
     }
     list.innerHTML = "";
-    sites.forEach(function (site) {
+    sites.forEach(function(site) {
       var el = document.createElement("a");
       el.href = "#";
       el.textContent = site.name;
       el.title = "Click to show on map";
       el.className =
         "py-1 pl-0.5 pr-1 hover:bg-blue-50 border-b border-gray-200 cursor-pointer flex items-center justify-between";
-      el.onclick = function () {
+      el.onclick = function() {
         siteSelected(site.el);
       };
       list.appendChild(el);
