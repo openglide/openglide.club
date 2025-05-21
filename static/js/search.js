@@ -26,7 +26,7 @@ async function showSearchSuggestions() {
     item.className = "px-2 py-1 hover:bg-blue-50 cursor-pointer text-gray-900";
     item.textContent = `Go to coordinates: ${lat}, ${lng}`;
     item.onclick = () => {
-      window.location = `/map?lat=${lat}&lon=${lng}`;
+      window.location = `/map?lat=${lat}&lon=${lng}&z=12`;
     };
     suggestionsBox.innerHTML = "";
     suggestionsBox.appendChild(item);
@@ -59,7 +59,7 @@ async function showSearchSuggestions() {
           item.onclick = () => {
             suggestionsBox.style.display = "none";
             suggestionsBox.innerHTML = "";
-            window.location = `/map?lat=${lat}&lon=${lng}`;
+            window.location = `/map?lat=${lat}&lon=${lng}&z=12`;
           };
           suggestionsBox.appendChild(item);
         });

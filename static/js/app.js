@@ -298,16 +298,10 @@ window.generateDrawerContent = (el) => {
 function panToFeature(feature) {
   const center = bestCoordinate(feature);
   if (center && map) {
-    window._map.setView(center, Math.max(window._map.getZoom(), 15), {
+    window._map.setView(center, Math.max(window._map.getZoom(), 16), {
       animate: true,
     });
   }
-}
-
-// featureCenterPoint finds a feature's center point based on its bounds
-function featureCenterPoint(feature) {
-
-  return null
 }
 
 // isSporty determines whether a feature is of the correct sport type
@@ -352,11 +346,10 @@ function boundsCenterPoint(bounds) {
 function siteBestFeatureCoordinate(site) {
   // check if members are launches or LZs
   if (site.members.length > 0) {
-    const launches= []
-    const landingZones= []
+    const launches = []
+    const landingZones = []
     site.members.forEach((member) => {
       const feature = window._features[osmId(member)]
-      console.log(feature.tags)
       // features can be both a landing zone and launch, so do not return early upon identifying a launch
       if (feature?.tags['free_flying:takeoff']) {
         launches.push(feature)
@@ -439,8 +432,10 @@ function elementCenter(el) {
 function loadMap(lat, lon) {
   var lastZoom;
 
+  let params = new URLSearchParams(window.location.search);
+  let zoom = params.get("z"); 
   // The zoom level at which the map initially loads
-  const initialZoom = 12;
+  const initialZoom = zoom ? zoom : 12;
 
   // Initialize map center
   var lastCenter = { lat: lat, lon: lon };
@@ -506,6 +501,15 @@ function loadMap(lat, lon) {
   }
 
   function onViewportChange() {
+    // update the URL with the new center point
+    const center = window._map.getCenter()
+    console.log(center)
+    newURL = window.location.href
+    newURL = newURL.replace(/lat\=[-]*\d+\.\d+/g, `lat=${center.lat}`)
+    newURL = newURL.replace(/lon\=[-]*\d+\.\d+/g, `lon=${center.lng}`)
+    newURL = newURL.replace(/z\=\d+/g, `z=${window._map.getZoom()}`)
+    window.history.pushState({}, null, newURL);
+
     if (shouldFetchNewData()) {
       fetchParaglidingSites();
     }
