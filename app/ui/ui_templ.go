@@ -31,7 +31,7 @@ func Head() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<head><title>Openglide :: Open source paraglide and hangglide sites</title><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"><link rel=\"stylesheet\" href=\"https://unpkg.com/leaflet@1.9.4/dist/leaflet.css\"><script src=\"https://unpkg.com/leaflet@1.9.4/dist/leaflet.js\"></script><link href=\"css/styles.css\" rel=\"stylesheet\"><script src=\"js/hyperscript.js\" async></script><script src=\"js/htmx.js\" async></script><script src=\"js/search.js\" async></script><script src=\"js/app.js\"></script></head>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<head><title>Openglide :: Open source paraglide and hangglide sites</title><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"><link rel=\"stylesheet\" href=\"https://unpkg.com/leaflet@1.9.4/dist/leaflet.css\"><script src=\"https://unpkg.com/leaflet@1.9.4/dist/leaflet.js\"></script><link href=\"css/styles.css\" rel=\"stylesheet\"><script src=\"js/hyperscript.js\" async></script><script src=\"js/htmx.js\" async></script><script src=\"js/search.js\" async></script><script src=\"js/app.js\"></script><script defer data-domain=\"openglide.club\" src=\"/js/script.tagged-events.js\"></script></head>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -118,7 +118,7 @@ func About() templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<section class=\"flex flex-col pt-18 p-8 gap-8 sm:gap-16 sm:m-32 sm:p-32 items-center text-center bg-black/50 backdrop-blur-xs sm:rounded-xl overflow-y-scroll sm:overflow-y-clip\"><p class=\"text-4xl font-bold text-wrap\">Openglide is a community-mapped hanggliding and paragliding site directory</p><p class=\"text-lg sm:text-xl font-bold\">Map data for openglide comes from <a href=\"https://openstreetmap.org\" class=\"underline\">Open Street Maps</a>.</p><div class=\"text-lg sm:text-xl\"><p class=\"pb-6\">Openglide is a work in progress. Anyone is welcome and encouraged <a href=\"https://github.com/openglide/openglide.club\" class=\"underline\">to contribute</a>. Here are some things coming in the near future.</p><p>- Add and update gliding sites</p></div></section>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<section class=\"flex flex-col pt-18 p-8 gap-8 sm:gap-16 sm:m-32 sm:p-32 items-center text-center bg-black/50 backdrop-blur-xs sm:rounded-xl overflow-y-scroll sm:overflow-y-clip\"><p class=\"text-4xl font-bold text-wrap\">Openglide is a community-mapped hanggliding and paragliding site directory</p><p class=\"text-lg sm:text-xl font-bold\">Map data for openglide comes from <a href=\"https://openstreetmap.org\" class=\"underline\">Open Street Maps</a>.</p><div class=\"text-lg sm:text-xl\"><p class=\"pb-6\">Openglide is a work in progress. Anyone is welcome and encouraged <a href=\"https://github.com/openglide/openglide.club\" class=\"underline\">to contribute</a>.</p></div></section>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -206,7 +206,7 @@ func Map(lat, lon string, embedded bool) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "<div id=\"container\" class=\"flex w-full h-full text-white\" _=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "<div id=\"container\" class=\"relative flex w-full h-full text-white\" _=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -224,7 +224,7 @@ func Map(lat, lon string, embedded bool) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		if !embedded {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "<button class=\"absolute top-4 left-24 h-16 z-1000 bg-gray-900 text-white rounded-lg p-3 text-2xl\" onclick=\"toggleSidebar()\" aria-label=\"Show site list\" type=\"button\" _=\"on click writeText(window.embedURL()) on navigator.clipboard then put &#39;Copied!&#39; into me\">Embed URL</button>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "<button class=\"absolute hidden md:block top-4 left-24 h-16 z-900 bg-gray-900 text-white rounded-lg p-3 text-2xl\" aria-label=\"Show site list\" type=\"button\" _=\"on click writeText(window.embedURL()) on navigator.clipboard then put &#39;Copied!&#39; into me then wait 2s then put &#39;Embed URL&#39; into me\">Embed URL</button>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -271,7 +271,7 @@ func Home() templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "<div id=\"search_box\" class=\"flex flex-col items-center justify-center \"><div class=\"relative flex w-screen items-center justify-center\"><div class=\"relative w-full p-3 text-sm sm:text-2xl sm:p-0 sm:w-1/2 text-bold  flex items-center justify-center\"><input type=\"text\" id=\"searchInput\" placeholder=\"Search by name, or coordinates\" class=\"h-16 w-full flex-grow px-5 py-1 border border-gray-300 rounded-l-lg focus:outline-none focus:ring-0 border-0 bg-black/25 backdrop-blur-sm  font-bold\" _=\"on keyup debounced at 400ms showSearchSuggestions()\"> <button id=\"search_button\" class=\"h-16 px-8 py-1 rounded-r-lg bg-cyan-600 text-sm sm:text-lg text-white font-bold  hover:bg-cyan-700 hover:cursor-pointer\" _=\"on click doSearch()\">Go</button><div id=\"search_suggestions\" class=\"absolute top-full p-3 w-full sm:p-0 p-2 mt-1 rounded bg-black/25 backdrop-blur-sm shadow z-[10000] max-h-56 overflow-y-auto text-white font-bold\" style=\"display:none;\"></div></div></div></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "<div id=\"search_box\" class=\"flex flex-col items-center justify-center \"><div class=\"relative flex w-screen items-center justify-center\"><div class=\"w-full p-3 text-sm sm:text-2xl sm:p-0 sm:w-1/2 text-bold flex items-center justify-center\"><div class=\"flex flex-col gap-12 justify-center\"><p class=\"text-4xl font-bold text-wrap text-center\">Openglide is a community-mapped hanggliding and paragliding site directory</p><div class=\"relative flex flex-row \"><input type=\"text\" id=\"searchInput\" placeholder=\"Search by name, or coordinates\" class=\"h-16 w-full flex-grow px-5 py-1 border border-gray-300 rounded-l-lg focus:outline-none focus:ring-0 border-0 bg-black/25 backdrop-blur-sm  font-bold\" _=\"on keyup debounced at 400ms showSearchSuggestions()\"> <button id=\"search_button\" class=\"h-16 px-8 py-1 rounded-r-lg bg-cyan-600 text-sm sm:text-lg text-white font-bold  hover:bg-cyan-700 hover:cursor-pointer\" _=\"on click doSearch()\">Go</button><div id=\"search_suggestions\" class=\"absolute top-full p-3 w-full sm:p-0 p-2 mt-1 rounded bg-black/25 backdrop-blur-sm shadow z-[10000] max-h-56 overflow-y-auto text-white font-bold\" style=\"display:none;\"></div></div></div></div></div></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

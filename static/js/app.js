@@ -503,7 +503,6 @@ function loadMap(lat, lon) {
   function onViewportChange() {
     // update the URL with the new center point
     const center = window._map.getCenter()
-    console.log(center)
     newURL = window.location.href
     newURL = newURL.replace(/lat\=[-]*\d+\.\d+/g, `lat=${center.lat}`)
     newURL = newURL.replace(/lon\=[-]*\d+\.\d+/g, `lon=${center.lng}`)
