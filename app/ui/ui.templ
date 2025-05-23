@@ -14,6 +14,7 @@ templ Head() {
 		<script src="js/htmx.js" async></script>
 		<script src="js/search.js" async></script>
 		<script src="js/app.js"></script>
+		<script defer data-domain="openglide.club" src="/js/script.tagged-events.js"></script>
 	</head>
 }
 
@@ -84,13 +85,13 @@ templ Map(lat, lon string, embedded bool) {
 		// only show the embed button when the map isn't already embedded
 		if !embedded {
 			<button
-				class="absolute top-4 left-24 h-16 z-1000 bg-gray-900 text-white rounded-lg p-3 text-4xl"
+				class="absolute top-4 left-24 h-16 z-1000 bg-gray-900 text-white rounded-lg p-3 text-2xl"
 				onclick="toggleSidebar()"
 				aria-label="Show site list"
 				type="button"
 				_="on click writeText(window.embedURL()) on navigator.clipboard then put 'Copied!' into me"
 			>
-				Embed
+				Embed URL
 			</button>
 		}
 		<div

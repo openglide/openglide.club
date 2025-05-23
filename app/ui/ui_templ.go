@@ -224,7 +224,7 @@ func Map(lat, lon string, embedded bool) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		if !embedded {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "<button class=\"absolute top-4 left-24 h-16 z-1000 bg-gray-900 text-white rounded-lg p-3 text-4xl\" onclick=\"toggleSidebar()\" aria-label=\"Show site list\" type=\"button\" _=\"on click writeText(window.embedURL()) on navigator.clipboard then put &#39;Copied!&#39; into me\">Embed</button>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "<button class=\"absolute top-4 left-24 h-16 z-1000 bg-gray-900 text-white rounded-lg p-3 text-2xl\" onclick=\"toggleSidebar()\" aria-label=\"Show site list\" type=\"button\" _=\"on click writeText(window.embedURL()) on navigator.clipboard then put &#39;Copied!&#39; into me\">Embed URL</button>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
